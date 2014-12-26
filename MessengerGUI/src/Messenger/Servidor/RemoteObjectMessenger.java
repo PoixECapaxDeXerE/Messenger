@@ -40,7 +40,7 @@ import java.util.logging.Logger;
  */
 public class RemoteObjectMessenger implements RemoteInterfaceMessenger {
 
-    Object message = "Hello from RMI";
+    Object message = "Hello from RMIIII";
     //byte[] file;
     Key sharedKey;
     byte[] cryptMEssage;

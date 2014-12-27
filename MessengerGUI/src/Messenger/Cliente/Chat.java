@@ -12,6 +12,8 @@ import Messenger.Servidor.RemoteInterfaceMessenger;
 import Messenger.Utils.Secrets;
 import Messenger.Utils.Serializer;
 import Messenger.Utils.Utils;
+import java.io.File;
+import java.nio.file.Files;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.security.Key;
@@ -22,6 +24,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JTextArea;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 
@@ -245,7 +248,32 @@ public class Chat extends javax.swing.JPanel implements Runnable {
     }//GEN-LAST:event_btnAddToConversationActionPerformed
 
     private void btnFileSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFileSendActionPerformed
-        // TODO add your handling code here:
+
+        try {
+            File file = Utils.getFile();
+            String ext = Files.probeContentType(file.toPath());
+
+            if (ext.contains("image")) {
+
+                int i = jTab.getSelectedIndex();
+                
+                ImageIcon icon = new ImageIcon(file.getAbsolutePath());
+                
+                Utils.writeText(chats.get(i - 1), " Send : ");
+                Utils.writeImage(chats.get(i - 1),icon );
+
+                byte[] data = Serializer.toByteArray(new ImageIcon(file.getAbsolutePath()));
+                data = Secrets.encrypt(data, sharedKey);
+
+                remote.setSecretMessage(data, jTab.getTitleAt(i), UserName);
+                txtMessage.setText("");
+            } else {
+                //enviaFicheiro
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
 
     }//GEN-LAST:event_btnFileSendActionPerformed
 
@@ -278,22 +306,38 @@ public class Chat extends javax.swing.JPanel implements Runnable {
                     byte[] data = m.getMessage();
 
                     data = Secrets.decrypt(data, sharedKey);
-                    String msg = (String) Serializer.toObject(data);
-                    //se for para a status escreve
+                    Object o = Serializer.toObject(data);
 
+                    //se nao existir a Janela do Chat entao cria
                     tst.setName(m.getDestination());
                     if (!containsChatUser(m.getDestination()) && !m.getDestination().equals("txtStatus")) {
                         newChatTo(m.getDestination());
                     }
 
-                    for (JTextPane jt : chats) {
-                        if (jt.getName().equals(m.getDestination())) {
-                            Utils.writeText(jt, " Get : " + msg);
-                        }
-                    }
+                  
+                    if (o instanceof String) {
+                       String msg = (String) o;
 
-                    if (m.getDestination().equals("txtStatus")) {
-                        Utils.writeText(txtStatus, " Get : " + msg);
+                        //se for para 1 utilizador
+                        for (JTextPane jt : chats) {
+                            if (jt.getName().equals(m.getDestination())) {
+                                Utils.writeText(jt, " Get : " + msg);
+                            }
+                        }
+                        //se for para o Status
+                        if (m.getDestination().equals("txtStatus")) {
+                            Utils.writeText(txtStatus, " Get : " + msg);
+                        }
+
+                    } else if (o instanceof ImageIcon) {
+                        ImageIcon icon = (ImageIcon)o;
+                        //se for para 1 utilizador
+                        for (JTextPane jt : chats) {
+                            if (jt.getName().equals(m.getDestination())) {
+                                Utils.writeText(jt, " Get : ");
+                                Utils.writeImage(jt, icon);
+                            }
+                        }
                     }
 
                 }
@@ -307,8 +351,9 @@ public class Chat extends javax.swing.JPanel implements Runnable {
 
     public boolean containsChatUser(String name) {
         for (JTextPane chat : chats) {
-            if(chat.getName().equals(name))
+            if (chat.getName().equals(name)) {
                 return true;
+            }
         }
         return false;
     }

@@ -22,6 +22,8 @@ import java.io.File;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.security.PublicKey;
+import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /*
  * To change this template, choose Tools | Templates
@@ -53,4 +55,7 @@ public interface RemoteInterfaceMessenger extends Remote {
 //    
 //    public void setFile(byte[] msg, String user) throws RemoteException;
     
+    public ConcurrentHashMap getHash() throws RemoteException;
+    
+    public boolean hasUsers() throws RemoteException;
 }

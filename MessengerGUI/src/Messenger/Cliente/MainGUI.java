@@ -3,48 +3,39 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package messengergui;
+package Messenger.Cliente;
 
 import Messenger.Servidor.RemoteInterfaceMessenger;
 import java.security.Key;
-
-
 
 /**
  *
  * @author Ricardo
  */
-public class MainGUI extends javax.swing.JFrame  {
+public class MainGUI extends javax.swing.JFrame {
 
-    static MainGUI frame;
-    static Register reg;
-    static Login login;
-    static Chat chat;
-    
-    static protected RemoteInterfaceMessenger remote;
-    static protected Key sharedKey;
-    static protected String REMOTE_NAME = "RemoteHello";
-    
-    
-    
+    MainGUI frame;
+    Register reg;
+    Login login;
+    Chat chat;
 
     /**
      * Creates new form teste
      */
     public MainGUI() {
         initComponents();
-
+        init();
     }
-    
-    public static void chat() {
+
+    public void chat() {
         frame.setSize(450, 660);
         login.setVisible(false);
         chat.setVisible(true);
         chat.setBounds(0, 0, 400, 460);
-        chat.connect();
+        chat.init();
     }
 
-    public static void reg() {
+    public void reg() {
         frame.setSize(400, 360);
         login.setVisible(false);
         reg.setVisible(true);
@@ -58,12 +49,10 @@ public class MainGUI extends javax.swing.JFrame  {
         chat.setVisible(false);
         login.setVisible(true);
         login.setBounds(0, 0, 400, 290);
-        
-        
+
     }
 
     public void start() {
-        
 
         frame.setVisible(true);
         frame.setBounds(100, 100, 400, 360);
@@ -74,15 +63,26 @@ public class MainGUI extends javax.swing.JFrame  {
         frame.add(login);
         frame.add(reg);
         frame.add(chat);
-        
+
         login();
     }
 
-    
-    
-    
-    
-    
+    public MainGUI getFrame() {
+        return frame;
+    }
+
+    public Register getReg() {
+        return reg;
+    }
+
+    public Login getLogin() {
+        return login;
+    }
+
+    public Chat getChat() {
+        return chat;
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -134,19 +134,21 @@ public class MainGUI extends javax.swing.JFrame  {
             java.util.logging.Logger.getLogger(MainGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        frame = new MainGUI();
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new MainGUI();
+            }
+        });
+    }
+
+    public void init() {
+        frame = this;
         login = new Login(frame);
         reg = new Register(frame);
         chat = new Chat(frame);
         frame.start();
-
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
-
-
 }

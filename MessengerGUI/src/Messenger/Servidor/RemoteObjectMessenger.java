@@ -20,11 +20,11 @@ package Messenger.Servidor;
 
 import Messenger.Utils.Secrets;
 import Messenger.Utils.Serializer;
-import Messenger.Utils.StringHEX;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.security.Key;
 import java.security.PublicKey;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
@@ -45,7 +45,7 @@ public class RemoteObjectMessenger implements RemoteInterfaceMessenger {
     Key sharedKey;
     byte[] cryptMEssage;
 
-    ConcurrentHashMap<String, CopyOnWriteArrayList> usersMessages;
+   ConcurrentHashMap<String, CopyOnWriteArrayList> usersMessages;
 
     public RemoteObjectMessenger() {
         try {
@@ -127,5 +127,17 @@ public class RemoteObjectMessenger implements RemoteInterfaceMessenger {
 //        this.file = msg;
 //         usersMessages.get(user).add(msg);
 //    }
+
+    @Override
+    public ConcurrentHashMap getHash() throws RemoteException {
+       return usersMessages;
+    }
+
+    @Override
+    public boolean hasUsers() throws RemoteException {
+        if(usersMessages.keySet().isEmpty())
+            return false;
+        return true;
+    }
 
 }

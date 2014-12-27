@@ -36,7 +36,7 @@ import java.util.logging.Logger;
  */
 public class Server {
 
-    public static final String objectName = "RemoteHello";
+    public static final String objectName = "RemoteMsn";
     public static final int port = 10010;
 
     public static void main(String[] args) {

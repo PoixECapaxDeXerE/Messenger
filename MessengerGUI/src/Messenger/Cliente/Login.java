@@ -3,45 +3,34 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package messengergui;
+package Messenger.Cliente;
 
-import Messenger.Servidor.RemoteInterfaceMessenger;
-import Messenger.Utils.Secrets;
-import Messenger.Utils.Serializer;
-import Messenger.Utils.Utils;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.security.Key;
-import java.security.KeyPair;
+import javax.swing.JTextField;
 
-import javax.swing.JOptionPane;
-//outro teste GIT
 
 /**
  *
  * @author Ricardo
  */
-public class Login extends javax.swing.JPanel implements Runnable {
+public class Login extends javax.swing.JPanel  {
 
     /**
      * Creates new form login
      */
     MainGUI mainGUI;
-    
+
+
+
     public Login(MainGUI mainGUI) {
 
         this.mainGUI = mainGUI;
         initComponents();
-        
+
     }
 
-//    public String getServerIP(){
-//        return this.txtServerIP.getText();
-//    }
-//    
-//    public String getServerPort(){
-//        return this.txtServerPort.getText();
-//    }
+
+
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -51,7 +40,6 @@ public class Login extends javax.swing.JPanel implements Runnable {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        btnConnectToServer = new javax.swing.JButton();
         txtServerIP = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -64,13 +52,6 @@ public class Login extends javax.swing.JPanel implements Runnable {
         lblToggleConnect = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         txtServerPort = new javax.swing.JTextField();
-
-        btnConnectToServer.setText("Connect");
-        btnConnectToServer.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnConnectToServerActionPerformed(evt);
-            }
-        });
 
         txtServerIP.setText("localhost");
 
@@ -145,9 +126,7 @@ public class Login extends javax.swing.JPanel implements Runnable {
                                     .addComponent(txtUsername, javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(txtServerPort, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE))
                                 .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(btnLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(btnConnectToServer))))))
+                                .addComponent(btnLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addGap(118, 118, 118))
         );
         layout.setVerticalGroup(
@@ -161,8 +140,7 @@ public class Login extends javax.swing.JPanel implements Runnable {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtServerPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4)
-                    .addComponent(btnConnectToServer))
+                    .addComponent(jLabel4))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtUsername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -172,7 +150,7 @@ public class Login extends javax.swing.JPanel implements Runnable {
                     .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3)
                     .addComponent(btnLogin))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 25, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(btnRegister))
@@ -180,26 +158,22 @@ public class Login extends javax.swing.JPanel implements Runnable {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnConnectToServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConnectToServerActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnConnectToServerActionPerformed
-
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
-        mainGUI.chat();
+
+         mainGUI.chat();
     }//GEN-LAST:event_btnLoginActionPerformed
 
     private void btnRegisterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegisterActionPerformed
 
-        MainGUI.reg();
+        mainGUI.reg();
     }//GEN-LAST:event_btnRegisterActionPerformed
 
     private void txtUsernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUsernameActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtUsernameActionPerformed
 
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnConnectToServer;
     private javax.swing.JButton btnLogin;
     private javax.swing.JButton btnRegister;
     private javax.swing.JButton jButton1;
@@ -214,41 +188,14 @@ public class Login extends javax.swing.JPanel implements Runnable {
     protected static javax.swing.JTextField txtUsername;
     // End of variables declaration//GEN-END:variables
 
-
-
-    @Override
-    public void run() {
-        try {
-            
-//
-//            //objecto que e remoto
-//
-//            //localizar o registry do servidor
-//            Registry registry = LocateRegistry.getRegistry(txtServerIP.getText(), Integer.parseInt(txtServerPort.getText()));
-//            //obtem a referencia remota
-//            remote = (RemoteInterfaceMessenger) registry.lookup(REMOTE_NAME);
-//            
-//            
-//            //executr o servico
-//    //            Utils.writeText(Chat., " Messeger : ready");
-//            Utils.writeText(Chat.jtxtStatus, REMOTE_NAME);
-//            KeyPair myKeys = Secrets.generateKeyPair();
-//            byte[] key = remote.getSharedkey(myKeys.getPublic());
-//            key = Secrets.decrypt(key, myKeys.getPrivate());
-//            sharedKey = (Key) Serializer.toObject(key);
-//
-//            Utils.writeText(Chat.jtxtStatus, " Messenger : Security ready");
-//            remote.connectUser(txtUsername.getText());
-//            Utils.writeText(Chat.jtxtStatus, " Messenger : Autentication ready");
-//            Chat c = new Chat();
-//            new Thread(c).start();
-//            MainGUI.chat();
-            
-            //escutar o objecto remoto
-            
-        } catch (Exception ex) {
-            //Utils.writeText(Chat.jtxtStatus, " Error");
-            JOptionPane.showMessageDialog(null,"Error!!!");
-        }
+    public static JTextField getTxtUsername() {
+        return txtUsername;
     }
+
+    public static void setTxtUsername(JTextField txtUsername) {
+        Login.txtUsername = txtUsername;
+    }
+
+
+    
 }

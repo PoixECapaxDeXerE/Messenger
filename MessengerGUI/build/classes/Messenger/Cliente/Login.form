@@ -55,10 +55,7 @@
                                   <Component id="txtServerPort" alignment="0" pref="100" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="btnLogin" min="-2" pref="73" max="-2" attributes="0"/>
-                                  <Component id="btnConnectToServer" min="-2" max="-2" attributes="0"/>
-                              </Group>
+                              <Component id="btnLogin" min="-2" pref="73" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
@@ -80,7 +77,6 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="txtServerPort" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="btnConnectToServer" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
@@ -93,7 +89,7 @@
                   <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btnLogin" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="22" max="32767" attributes="0"/>
+              <EmptySpace pref="25" max="32767" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jButton1" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btnRegister" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -104,14 +100,6 @@
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Component class="javax.swing.JButton" name="btnConnectToServer">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Connect"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnConnectToServerActionPerformed"/>
-      </Events>
-    </Component>
     <Component class="javax.swing.JTextField" name="txtServerIP">
       <Properties>
         <Property name="text" type="java.lang.String" value="localhost"/>

@@ -215,18 +215,21 @@ public class Chat extends javax.swing.JPanel implements Runnable {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSendMessageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendMessageActionPerformed
-        try {
-            int i = jTab.getSelectedIndex();
+        if (jTab.getSelectedIndex() != 0) {
+            try {
+                int i = jTab.getSelectedIndex();
 
-            Utils.writeText(chats.get(i - 1), " Send : " + txtMessage.getText());
+                Utils.writeText(chats.get(i - 1), " Send : " + txtMessage.getText());
 
-            byte[] data = Serializer.toByteArray(txtMessage.getText());
-            data = Secrets.encrypt(data, sharedKey);
+                byte[] data = Serializer.toByteArray(txtMessage.getText());
+                data = Secrets.encrypt(data, sharedKey);
 
-            remote.setSecretMessage(data, jTab.getTitleAt(i), UserName);
-            txtMessage.setText("");
-        } catch (Exception ex) {
-            Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
+                remote.setSecretMessage(data, jTab.getTitleAt(i), UserName);
+                txtMessage.setText("");
+
+            } catch (Exception ex) {
+                Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }//GEN-LAST:event_btnSendMessageActionPerformed
 
@@ -248,30 +251,31 @@ public class Chat extends javax.swing.JPanel implements Runnable {
     }//GEN-LAST:event_btnAddToConversationActionPerformed
 
     private void btnFileSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFileSendActionPerformed
+        if (jTab.getSelectedIndex() != 0) {
+            try {
+                File file = Utils.getFile();
+                String ext = Files.probeContentType(file.toPath());
 
-        try {
-            File file = Utils.getFile();
-            String ext = Files.probeContentType(file.toPath());
+                if (ext.contains("image")) {
 
-            if (ext.contains("image")) {
+                    int i = jTab.getSelectedIndex();
 
-                int i = jTab.getSelectedIndex();
-                
-                ImageIcon icon = new ImageIcon(file.getAbsolutePath());
-                
-                Utils.writeText(chats.get(i - 1), " Send : ");
-                Utils.writeImage(chats.get(i - 1),icon );
+                    ImageIcon icon = new ImageIcon(file.getAbsolutePath());
 
-                byte[] data = Serializer.toByteArray(new ImageIcon(file.getAbsolutePath()));
-                data = Secrets.encrypt(data, sharedKey);
+                    Utils.writeText(chats.get(i - 1), " Send : ");
+                    Utils.writeImage(chats.get(i - 1), icon);
+                    Utils.writeText(chats.get(i - 1), " \n ");
+                    byte[] data = Serializer.toByteArray(new ImageIcon(file.getAbsolutePath()));
+                    data = Secrets.encrypt(data, sharedKey);
 
-                remote.setSecretMessage(data, jTab.getTitleAt(i), UserName);
-                txtMessage.setText("");
-            } else {
-                //enviaFicheiro
+                    remote.setSecretMessage(data, jTab.getTitleAt(i), UserName);
+                    txtMessage.setText("");
+                } else {
+                    //enviaFicheiro
+                }
+            } catch (Exception ex) {
+                Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } catch (Exception ex) {
-            Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
         }
 
 
@@ -294,17 +298,17 @@ public class Chat extends javax.swing.JPanel implements Runnable {
     protected javax.swing.JTextField txtMessage;
     private javax.swing.JTextPane txtStatus;
     // End of variables declaration//GEN-END:variables
- JTextArea tst = new JTextArea();
+
+    JTextArea tst = new JTextArea();
 
     @Override
     public void run() {
-        //String User = Login.txtUsername.getText();
         while (true) {
             try {
                 while (remote.hasMessages(UserName)) {
                     Messages m = remote.getSecretMessage(UserName);
                     byte[] data = m.getMessage();
-
+                    //decripta as mensagens
                     data = Secrets.decrypt(data, sharedKey);
                     Object o = Serializer.toObject(data);
 
@@ -314,10 +318,9 @@ public class Chat extends javax.swing.JPanel implements Runnable {
                         newChatTo(m.getDestination());
                     }
 
-                  
+                    //se o conteudo das mensagens for uma String
                     if (o instanceof String) {
-                       String msg = (String) o;
-
+                        String msg = (String) o;
                         //se for para 1 utilizador
                         for (JTextPane jt : chats) {
                             if (jt.getName().equals(m.getDestination())) {
@@ -328,18 +331,19 @@ public class Chat extends javax.swing.JPanel implements Runnable {
                         if (m.getDestination().equals("txtStatus")) {
                             Utils.writeText(txtStatus, " Get : " + msg);
                         }
-
+                        //se for uma imagem mostra
                     } else if (o instanceof ImageIcon) {
-                        ImageIcon icon = (ImageIcon)o;
+                        //imagem para mostrar
+                        ImageIcon icon = (ImageIcon) o;
                         //se for para 1 utilizador
                         for (JTextPane jt : chats) {
                             if (jt.getName().equals(m.getDestination())) {
                                 Utils.writeText(jt, " Get : ");
                                 Utils.writeImage(jt, icon);
+                                Utils.writeText(jt, " \n ");
                             }
                         }
                     }
-
                 }
                 Thread.sleep(1000);
             } catch (Exception ex) {
@@ -358,13 +362,19 @@ public class Chat extends javax.swing.JPanel implements Runnable {
         return false;
     }
 
+    /**
+     * Cria uma nova Tab
+     *
+     * @param UserDestination
+     */
     public void newChatTo(String UserDestination) {
 
         JTextPane j = new JTextPane();
+        j.setEditable(false);
         j.setName(UserDestination);
         chats.add(j);
         jTab.add(UserDestination, new JScrollPane(chats.get(chats.size() - 1)));
-
+        jTab.setSelectedIndex(jTab.getTabCount() - 1);
     }
 
     /**

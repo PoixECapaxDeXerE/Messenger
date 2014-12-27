@@ -50,9 +50,8 @@ public class Chat extends javax.swing.JPanel implements Runnable {
 
     public void init() {
         UserName = Login.getTxtUsername().getText();
-
         txtLoginUserName.setText(UserName);
-        //listModel.addElement(mainGUI.login.getTxtUsername().getText());
+        
         try {
 
             //localizar o registry do servidor
@@ -222,7 +221,7 @@ public class Chat extends javax.swing.JPanel implements Runnable {
             byte[] data = Serializer.toByteArray(txtMessage.getText());
             data = Secrets.encrypt(data, sharedKey);
 
-            remote.setSecretMessage(data, jTab.getName());
+            remote.setSecretMessage(data, jTab.getTitleAt(i));
             txtMessage.setText("");
         } catch (Exception ex) {
             Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
@@ -237,7 +236,7 @@ public class Chat extends javax.swing.JPanel implements Runnable {
 
         chats.add(new JTextArea());
         if (lstUsersOnline.getSelectedValue() != null) {
-            jTab.add(lstUsersOnline.getSelectedValue().toString(), new JScrollPane(chats.get(chats.size()-1)));
+            jTab.add(lstUsersOnline.getSelectedValue().toString(), new JScrollPane(chats.get(chats.size() - 1)));
         }
 
     }//GEN-LAST:event_btnChatToActionPerformed
@@ -273,17 +272,20 @@ public class Chat extends javax.swing.JPanel implements Runnable {
     @Override
     public void run() {
         //String User = Login.txtUsername.getText();
-        try {
-            while (remote.hasMessages(UserName)) {
-                byte[] data = remote.getSecretMessage(UserName);
-                data = Secrets.decrypt(data, sharedKey);
-                String msg = (String) Serializer.toObject(data);
-                Utils.writeText(txtStatus, " Get : " + msg);
+        while (true) {
+            try {
+                while (remote.hasMessages(UserName)) {
+                    byte[] data = remote.getSecretMessage(UserName);
+                    data = Secrets.decrypt(data, sharedKey);
+                    String msg = (String) Serializer.toObject(data);
+                    
+                    Utils.writeText(txtStatus, " Get : " + msg);
+                }
+                Thread.sleep(1000);
+            } catch (Exception ex) {
+                System.out.println("erro");
+                Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
             }
-            Thread.sleep(1000);
-        } catch (Exception ex) {
-            System.out.println("erro");
-            Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

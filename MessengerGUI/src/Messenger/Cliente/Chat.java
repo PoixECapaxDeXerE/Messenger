@@ -7,6 +7,7 @@
  */
 package Messenger.Cliente;
 
+import Messenger.Servidor.Messages;
 import Messenger.Servidor.RemoteInterfaceMessenger;
 import Messenger.Utils.Secrets;
 import Messenger.Utils.Serializer;
@@ -16,6 +17,7 @@ import java.rmi.registry.Registry;
 import java.security.Key;
 import java.security.KeyPair;
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JTextArea;
@@ -29,7 +31,7 @@ import javax.swing.JScrollPane;
  */
 public class Chat extends javax.swing.JPanel implements Runnable {
 
-    ArrayList<JTextArea> chats;
+    CopyOnWriteArrayList<JTextArea> chats;
     MainGUI mainGUI;
     Key sharedKey;
     RemoteInterfaceMessenger remote;
@@ -43,7 +45,7 @@ public class Chat extends javax.swing.JPanel implements Runnable {
      * Creates new form Chat
      */
     public Chat(MainGUI mainGUI) {
-        chats = new ArrayList<>();
+        chats = new CopyOnWriteArrayList<>();
         this.mainGUI = mainGUI;
         initComponents();
     }
@@ -51,7 +53,7 @@ public class Chat extends javax.swing.JPanel implements Runnable {
     public void init() {
         UserName = Login.getTxtUsername().getText();
         txtLoginUserName.setText(UserName);
-        
+
         try {
 
             //localizar o registry do servidor
@@ -212,7 +214,6 @@ public class Chat extends javax.swing.JPanel implements Runnable {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSendMessageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendMessageActionPerformed
-        // TODO add your handling code here:
         try {
             int i = jTab.getSelectedIndex();
 
@@ -221,7 +222,7 @@ public class Chat extends javax.swing.JPanel implements Runnable {
             byte[] data = Serializer.toByteArray(txtMessage.getText());
             data = Secrets.encrypt(data, sharedKey);
 
-            remote.setSecretMessage(data, jTab.getTitleAt(i));
+            remote.setSecretMessage(data, jTab.getTitleAt(i), UserName);
             txtMessage.setText("");
         } catch (Exception ex) {
             Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
@@ -233,13 +234,12 @@ public class Chat extends javax.swing.JPanel implements Runnable {
     }//GEN-LAST:event_btnLogoutActionPerformed
 
     private void btnChatToActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChatToActionPerformed
-
-        chats.add(new JTextArea());
+        String UserDestination = lstUsersOnline.getSelectedValue().toString();
         if (lstUsersOnline.getSelectedValue() != null) {
-            jTab.add(lstUsersOnline.getSelectedValue().toString(), new JScrollPane(chats.get(chats.size() - 1)));
+            newChatTo(UserDestination);
         }
-
     }//GEN-LAST:event_btnChatToActionPerformed
+
 
     private void btnAddToConversationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddToConversationActionPerformed
         // TODO add your handling code here:
@@ -268,6 +268,7 @@ public class Chat extends javax.swing.JPanel implements Runnable {
     protected javax.swing.JTextField txtMessage;
     protected static javax.swing.JTextArea txtStatus;
     // End of variables declaration//GEN-END:variables
+ JTextArea tst = new JTextArea();
 
     @Override
     public void run() {
@@ -275,11 +276,28 @@ public class Chat extends javax.swing.JPanel implements Runnable {
         while (true) {
             try {
                 while (remote.hasMessages(UserName)) {
-                    byte[] data = remote.getSecretMessage(UserName);
+                    Messages m = remote.getSecretMessage(UserName);
+                    byte[] data = m.getMessage();
+
                     data = Secrets.decrypt(data, sharedKey);
                     String msg = (String) Serializer.toObject(data);
-                    
-                    Utils.writeText(txtStatus, " Get : " + msg);
+                    //se for para a status escreve
+
+                    tst.setName(m.getDestination());
+                    if (!containsChatUser(m.getDestination()) && !m.getDestination().equals("txtStatus")) {
+                        newChatTo(m.getDestination());
+                    }
+
+                    for (JTextArea jt : chats) {
+                        if (jt.getName().equals(m.getDestination())) {
+                            Utils.writeText(jt, " Get : " + msg);
+                        }
+                    }
+
+                    if (m.getDestination().equals("txtStatus")) {
+                        Utils.writeText(txtStatus, " Get : " + msg);
+                    }
+
                 }
                 Thread.sleep(1000);
             } catch (Exception ex) {
@@ -287,6 +305,23 @@ public class Chat extends javax.swing.JPanel implements Runnable {
                 Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+
+    public boolean containsChatUser(String name) {
+        for (JTextArea chat : chats) {
+            if(chat.getName().equals(name))
+                return true;
+        }
+        return false;
+    }
+
+    public void newChatTo(String UserDestination) {
+
+        JTextArea j = new JTextArea();
+        j.setName(UserDestination);
+        chats.add(j);
+        jTab.add(UserDestination, new JScrollPane(chats.get(chats.size() - 1)));
+
     }
 
     /**
@@ -307,10 +342,11 @@ public class Chat extends javax.swing.JPanel implements Runnable {
                         }
                     }
                     Thread.sleep(5000);
-                }
 
+                }
             } catch (Exception ex) {
-                Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(Chat.class
+                        .getName()).log(Level.SEVERE, null, ex);
             }
         }
     });

@@ -45,9 +45,9 @@ public interface RemoteInterfaceMessenger extends Remote {
 
     public boolean hasMessages(String user) throws RemoteException;
     
-    public byte[] getSecretMessage(String user) throws RemoteException;
+    public Messages getSecretMessage(String user) throws RemoteException;
 
-    public void setSecretMessage(byte[] msg, String user) throws RemoteException;
+    public void setSecretMessage(byte[] msg, String user,String UserDestination) throws RemoteException;
     
 //    public boolean hasFiles(String user)throws RemoteException;
 //    

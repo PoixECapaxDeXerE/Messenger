@@ -45,7 +45,7 @@ public class RemoteObjectMessenger implements RemoteInterfaceMessenger {
     Key sharedKey;
     byte[] cryptMEssage;
 
-   ConcurrentHashMap<String, CopyOnWriteArrayList> usersMessages;
+   ConcurrentHashMap<String, CopyOnWriteArrayList<Messages>> usersMessages;
 
     public RemoteObjectMessenger() {
         try {
@@ -76,8 +76,8 @@ public class RemoteObjectMessenger implements RemoteInterfaceMessenger {
     @Override
     public void connectUser(String user) throws RemoteException {
         System.out.println("connecting User" + user);
-        usersMessages.put(user, new CopyOnWriteArrayList());
-        setSecretMessage(cryptMEssage, user);
+        usersMessages.put(user, new CopyOnWriteArrayList<Messages>());
+        setSecretMessage(cryptMEssage, user,"txtStatus");
     }
 
     @Override
@@ -92,18 +92,28 @@ public class RemoteObjectMessenger implements RemoteInterfaceMessenger {
     }
 
     @Override
-    public byte[] getSecretMessage(String user) throws RemoteException {
-        System.out.println("Getting message to" + user);
-        return (byte []) usersMessages.get(user).remove(0);
+    public Messages getSecretMessage(String user) throws RemoteException {
+        System.out.println("Getting message to" + user);     
+        return  usersMessages.get(user).remove(0);
     }
 
     @Override
-    public void setSecretMessage(byte[] msg, String user) throws RemoteException {
+    public void setSecretMessage(byte[] msg, String user,String UserDestination) throws RemoteException {
         System.out.println("Setting message to" + user);
-        usersMessages.get(user).add(msg);
+        usersMessages.get(user).add(new Messages(msg, UserDestination));
+    }    
+  
+    @Override
+    public ConcurrentHashMap getHash() throws RemoteException {
+       return usersMessages;
     }
-    
-    
+
+    @Override
+    public boolean hasUsers() throws RemoteException {
+        if(usersMessages.keySet().isEmpty())
+            return false;
+        return true;
+    }  
     
     
     
@@ -128,16 +138,5 @@ public class RemoteObjectMessenger implements RemoteInterfaceMessenger {
 //         usersMessages.get(user).add(msg);
 //    }
 
-    @Override
-    public ConcurrentHashMap getHash() throws RemoteException {
-       return usersMessages;
-    }
-
-    @Override
-    public boolean hasUsers() throws RemoteException {
-        if(usersMessages.keySet().isEmpty())
-            return false;
-        return true;
-    }
 
 }

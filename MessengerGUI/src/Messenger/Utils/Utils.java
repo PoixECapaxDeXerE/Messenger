@@ -8,10 +8,15 @@ package Messenger.Utils;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 
 /**
  *
@@ -19,11 +24,17 @@ import javax.swing.SwingUtilities;
  */
 public class Utils {
 
-    public static void writeText(final JTextArea jtarea, final String msg) {
+    public static void writeText(final JTextPane jtarea, final String msg) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                jtarea.append(msg + "\n");
+                try {
+                    //jtarea.append(msg + "\n");
+                    Document doc = jtarea.getDocument();
+                    doc.insertString(doc.getLength(), msg+"\n", null);
+                } catch (BadLocationException ex) {
+                    Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }

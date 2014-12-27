@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 import javax.swing.JTextArea;
 import javax.swing.DefaultListModel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
 
 //
 /**
@@ -31,7 +32,7 @@ import javax.swing.JScrollPane;
  */
 public class Chat extends javax.swing.JPanel implements Runnable {
 
-    CopyOnWriteArrayList<JTextArea> chats;
+    CopyOnWriteArrayList<JTextPane> chats;
     MainGUI mainGUI;
     Key sharedKey;
     RemoteInterfaceMessenger remote;
@@ -95,8 +96,8 @@ public class Chat extends javax.swing.JPanel implements Runnable {
         txtMessage = new javax.swing.JTextField();
         btnSendMessage = new javax.swing.JButton();
         jTab = new javax.swing.JTabbedPane();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        txtStatus = new javax.swing.JTextArea();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        txtStatus = new javax.swing.JTextPane();
         btnChatTo = new javax.swing.JButton();
         btnAddToConversation = new javax.swing.JButton();
         btnFileSend = new javax.swing.JButton();
@@ -114,12 +115,9 @@ public class Chat extends javax.swing.JPanel implements Runnable {
             }
         });
 
-        txtStatus.setEditable(false);
-        txtStatus.setColumns(20);
-        txtStatus.setRows(5);
-        jScrollPane1.setViewportView(txtStatus);
+        jScrollPane3.setViewportView(txtStatus);
 
-        jTab.addTab("Status", jScrollPane1);
+        jTab.addTab("Status", jScrollPane3);
 
         btnChatTo.setText("Chat!");
         btnChatTo.addActionListener(new java.awt.event.ActionListener() {
@@ -260,13 +258,13 @@ public class Chat extends javax.swing.JPanel implements Runnable {
     private javax.swing.JButton btnLogout;
     private javax.swing.JButton btnSendMessage;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     protected javax.swing.JTabbedPane jTab;
     protected javax.swing.JList lstUsersOnline;
     private javax.swing.JTextField txtLoginUserName;
     protected javax.swing.JTextField txtMessage;
-    protected static javax.swing.JTextArea txtStatus;
+    private javax.swing.JTextPane txtStatus;
     // End of variables declaration//GEN-END:variables
  JTextArea tst = new JTextArea();
 
@@ -288,7 +286,7 @@ public class Chat extends javax.swing.JPanel implements Runnable {
                         newChatTo(m.getDestination());
                     }
 
-                    for (JTextArea jt : chats) {
+                    for (JTextPane jt : chats) {
                         if (jt.getName().equals(m.getDestination())) {
                             Utils.writeText(jt, " Get : " + msg);
                         }
@@ -308,7 +306,7 @@ public class Chat extends javax.swing.JPanel implements Runnable {
     }
 
     public boolean containsChatUser(String name) {
-        for (JTextArea chat : chats) {
+        for (JTextPane chat : chats) {
             if(chat.getName().equals(name))
                 return true;
         }
@@ -317,7 +315,7 @@ public class Chat extends javax.swing.JPanel implements Runnable {
 
     public void newChatTo(String UserDestination) {
 
-        JTextArea j = new JTextArea();
+        JTextPane j = new JTextPane();
         j.setName(UserDestination);
         chats.add(j);
         jTab.add(UserDestination, new JScrollPane(chats.get(chats.size() - 1)));
@@ -342,7 +340,6 @@ public class Chat extends javax.swing.JPanel implements Runnable {
                         }
                     }
                     Thread.sleep(5000);
-
                 }
             } catch (Exception ex) {
                 Logger.getLogger(Chat.class

@@ -5,11 +5,14 @@
  */
 package Messenger.Cliente;
 
+import Messenger.Servidor.Database;
+
 /**
  *
  * @author Ricardo
  */
 public class Register extends javax.swing.JPanel {
+
     MainGUI mainGUI;
 
     /**
@@ -41,6 +44,10 @@ public class Register extends javax.swing.JPanel {
         txtRegAnswer = new javax.swing.JTextField();
         btnAvatar = new javax.swing.JButton();
         btnRegRegister = new javax.swing.JButton();
+        txtWarnings = new javax.swing.JTextField();
+        btnContinue = new javax.swing.JButton();
+
+        txtRegUsername.setText("User");
 
         jLabel1.setText("Username:");
 
@@ -52,13 +59,20 @@ public class Register extends javax.swing.JPanel {
 
         jLabel5.setText("Answer:");
 
-        txtRegPassword.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtRegPasswordActionPerformed(evt);
-            }
-        });
+        txtRegPassword.setText("123");
+
+        txtRegCheckPassword.setText("123");
+
+        txtRegQuestion.setText("ola");
+
+        txtRegAnswer.setText("ola");
 
         btnAvatar.setText("Avatar");
+        btnAvatar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAvatarActionPerformed(evt);
+            }
+        });
 
         btnRegRegister.setText("Register!");
         btnRegRegister.addActionListener(new java.awt.event.ActionListener() {
@@ -67,36 +81,50 @@ public class Register extends javax.swing.JPanel {
             }
         });
 
+        btnContinue.setText("Continue!");
+        btnContinue.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnContinueActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(24, 24, 24)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addGroup(layout.createSequentialGroup()
+                        .addGap(24, 24, 24)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel5))
-                        .addGap(18, 18, 18)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel3)
+                                    .addComponent(jLabel4)
+                                    .addComponent(jLabel5))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txtRegAnswer, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtRegQuestion, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtRegCheckPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel1)
+                                    .addComponent(jLabel2))
+                                .addGap(48, 48, 48)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txtRegPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(txtRegUsername, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(btnAvatar, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(33, 33, 33)
+                        .addComponent(txtWarnings, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtRegAnswer, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtRegQuestion, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtRegCheckPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(btnRegRegister)
-                        .addGroup(layout.createSequentialGroup()
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jLabel1)
-                                .addComponent(jLabel2))
-                            .addGap(48, 48, 48)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(txtRegPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(txtRegUsername, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(btnAvatar, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                            .addComponent(btnContinue)
+                            .addComponent(btnRegRegister))))
                 .addContainerGap(14, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -123,24 +151,51 @@ public class Register extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(txtRegAnswer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnRegRegister)
-                .addContainerGap(30, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnRegRegister)
+                    .addComponent(txtWarnings, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(btnContinue)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void txtRegPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtRegPasswordActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtRegPasswordActionPerformed
-
     private void btnRegRegisterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegRegisterActionPerformed
-        mainGUI.login();
-        
+        registar();
+
+
     }//GEN-LAST:event_btnRegRegisterActionPerformed
 
+    private void btnContinueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnContinueActionPerformed
+        mainGUI.login();
+    }//GEN-LAST:event_btnContinueActionPerformed
+
+    private void btnAvatarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAvatarActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnAvatarActionPerformed
+
+    public boolean registar() {
+        String user = txtRegUsername.getText();
+        String Pass = txtRegPassword.getText();
+        String CheckPass = txtRegCheckPassword.getText();
+        String quest = txtRegQuestion.getText();
+        String ans = txtRegAnswer.getText();
+        if (!Pass.equals(CheckPass)) {
+            txtWarnings.setText("As Passwords não correspondem");
+            return false;
+        } else if (Database.userExists(user)) {
+            txtWarnings.setText("O utilizador ja existe");
+            return false;
+        }
+        Database.insert(user, Pass, quest, ans);
+        txtWarnings.setText("O utilizador foi creado com sucessso!");
+        return true;
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAvatar;
+    private javax.swing.JButton btnContinue;
     private javax.swing.JButton btnRegRegister;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -152,5 +207,6 @@ public class Register extends javax.swing.JPanel {
     private javax.swing.JTextField txtRegPassword;
     private javax.swing.JTextField txtRegQuestion;
     private javax.swing.JTextField txtRegUsername;
+    private javax.swing.JTextField txtWarnings;
     // End of variables declaration//GEN-END:variables
 }

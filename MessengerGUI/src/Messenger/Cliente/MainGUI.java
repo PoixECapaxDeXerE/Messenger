@@ -39,7 +39,7 @@ public class MainGUI extends javax.swing.JFrame {
         frame.setSize(400, 360);
         login.setVisible(false);
         reg.setVisible(true);
-        reg.setBounds(0, 0, 400, 290);
+        reg.setBounds(0, 0, 500, 500);
     }
 
     public void login() {

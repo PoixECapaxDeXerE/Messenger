@@ -135,6 +135,7 @@ public class Register extends javax.swing.JPanel {
 
     private void btnRegRegisterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegRegisterActionPerformed
         mainGUI.login();
+        
     }//GEN-LAST:event_btnRegRegisterActionPerformed
 
 

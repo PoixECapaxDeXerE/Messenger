@@ -81,6 +81,7 @@ public class RWserializable {
     public static void writeFile(byte[] data, String fileName) throws Exception {
         FileOutputStream fos = new FileOutputStream("src/Files/"+fileName);
         BufferedOutputStream bos = new BufferedOutputStream(fos);
+        
         bos.write(data, 0, data.length);
         bos.flush();
         fos.close();

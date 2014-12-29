@@ -19,6 +19,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.security.Key;
 import java.security.KeyPair;
+import java.security.Signature;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,6 +39,7 @@ public class Chat extends javax.swing.JPanel implements Runnable {
     CopyOnWriteArrayList<JTextPane> chats;
     MainGUI mainGUI;
     Key sharedKey;
+
     RemoteInterfaceMessenger remote;
     DefaultListModel listModel;
     String REMOTE_NAME = "RemoteMsn";
@@ -68,8 +70,8 @@ public class Chat extends javax.swing.JPanel implements Runnable {
             remote = (RemoteInterfaceMessenger) registry.lookup(REMOTE_NAME);
             //executr o servico
             Utils.writeText(txtStatus, " Messenger: ready");
-
-            KeyPair myKeys = Secrets.generateKeyPair();
+            KeyPair myKeys;
+            myKeys = Secrets.generateKeyPair();
             byte[] key = remote.getSharedkey(myKeys.getPublic());
             key = Secrets.decrypt(key, myKeys.getPrivate());
             sharedKey = (Key) Serializer.toObject(key);
@@ -298,7 +300,7 @@ public class Chat extends javax.swing.JPanel implements Runnable {
 
             byte[] data = Serializer.toByteArray(RWserializable.readFile(file.getAbsolutePath()));
             data = Secrets.encrypt(data, sharedKey);
-
+            //Assinar a mensagem
             remote.setFile(data, jTab.getTitleAt(i), UserName, file.getName());
             txtMessage.setText("");
         } catch (Exception ex) {
@@ -375,7 +377,7 @@ public class Chat extends javax.swing.JPanel implements Runnable {
                         RWserializable.writeFile(data, fileName);
                         for (JTextPane jt : chats) {
                             if (jt.getName().equals(m.getDestination())) {
-                                Utils.writeText(jt, " Get : File " +fileName);
+                                Utils.writeText(jt, " Get : File " + fileName);
                                 Utils.writeText(jt, " \n ");
                             }
                         }

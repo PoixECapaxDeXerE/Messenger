@@ -9,6 +9,7 @@ package Messenger.Cliente;
 
 import Messenger.Servidor.Messages;
 import Messenger.Servidor.RemoteInterfaceMessenger;
+import Messenger.Utils.RWserializable;
 import Messenger.Utils.Secrets;
 import Messenger.Utils.Serializer;
 import Messenger.Utils.Utils;
@@ -18,7 +19,6 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.security.Key;
 import java.security.KeyPair;
-import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,6 +47,8 @@ public class Chat extends javax.swing.JPanel implements Runnable {
 
     /**
      * Creates new form Chat
+     *
+     * @param mainGUI
      */
     public Chat(MainGUI mainGUI) {
         chats = new CopyOnWriteArrayList<>();
@@ -256,22 +258,29 @@ public class Chat extends javax.swing.JPanel implements Runnable {
                 File file = Utils.getFile();
                 String ext = Files.probeContentType(file.toPath());
 
-                if (ext.contains("image")) {
+                int i = jTab.getSelectedIndex();
+                //se nao conhecer o tipo retorna null
+                if (ext != null) {
+                    //se for imagem
+                    if (ext.contains("image")) {
 
-                    int i = jTab.getSelectedIndex();
+                        ImageIcon icon = new ImageIcon(file.getAbsolutePath());
 
-                    ImageIcon icon = new ImageIcon(file.getAbsolutePath());
+                        Utils.writeText(chats.get(i - 1), " Send : ");
+                        Utils.writeImage(chats.get(i - 1), icon);
+                        Utils.writeText(chats.get(i - 1), " \n ");
+                        byte[] data = Serializer.toByteArray(new ImageIcon(file.getAbsolutePath()));
+                        data = Secrets.encrypt(data, sharedKey);
 
-                    Utils.writeText(chats.get(i - 1), " Send : ");
-                    Utils.writeImage(chats.get(i - 1), icon);
-                    Utils.writeText(chats.get(i - 1), " \n ");
-                    byte[] data = Serializer.toByteArray(new ImageIcon(file.getAbsolutePath()));
-                    data = Secrets.encrypt(data, sharedKey);
-
-                    remote.setSecretMessage(data, jTab.getTitleAt(i), UserName);
-                    txtMessage.setText("");
+                        remote.setSecretMessage(data, jTab.getTitleAt(i), UserName);
+                        txtMessage.setText("");
+                        //se nao for imagem e conhecer o tipo
+                    } else {
+                        sendFile(i, file);
+                    }
                 } else {
-                    //enviaFicheiro
+                    //se nao conhecer o tipo
+                    sendFile(i, file);
                 }
             } catch (Exception ex) {
                 Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
@@ -281,6 +290,21 @@ public class Chat extends javax.swing.JPanel implements Runnable {
 
     }//GEN-LAST:event_btnFileSendActionPerformed
 
+    public void sendFile(int i, File file) {
+        try {
+            //enviaFicheiro
+            Utils.writeText(chats.get(i - 1), " Send : File:" + file.getName());
+            Utils.writeText(chats.get(i - 1), " \n ");
+
+            byte[] data = Serializer.toByteArray(RWserializable.readFile(file.getAbsolutePath()));
+            data = Secrets.encrypt(data, sharedKey);
+
+            remote.setFile(data, jTab.getTitleAt(i), UserName, file.getName());
+            txtMessage.setText("");
+        } catch (Exception ex) {
+            Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAddToConversation;
@@ -343,12 +367,26 @@ public class Chat extends javax.swing.JPanel implements Runnable {
                                 Utils.writeText(jt, " \n ");
                             }
                         }
+                    } else {
+                        byte[] file = (byte[]) o;
+
+                        String fileName = m.getFileName();
+
+                        RWserializable.writeFile(data, fileName);
+                        for (JTextPane jt : chats) {
+                            if (jt.getName().equals(m.getDestination())) {
+                                Utils.writeText(jt, " Get : File " +fileName);
+                                Utils.writeText(jt, " \n ");
+                            }
+                        }
                     }
                 }
                 Thread.sleep(1000);
             } catch (Exception ex) {
                 System.out.println("erro");
-                Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
+                Logger
+                        .getLogger(Chat.class
+                                .getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -395,6 +433,7 @@ public class Chat extends javax.swing.JPanel implements Runnable {
                         }
                     }
                     Thread.sleep(5000);
+
                 }
             } catch (Exception ex) {
                 Logger.getLogger(Chat.class

@@ -49,11 +49,10 @@ public interface RemoteInterfaceMessenger extends Remote {
 
     public void setSecretMessage(byte[] msg, String user,String UserDestination) throws RemoteException;
     
-//    public boolean hasFiles(String user)throws RemoteException;
-//    
-//    public byte[] getFile(String user)throws RemoteException;
-//    
-//    public void setFile(byte[] msg, String user) throws RemoteException;
+    
+    public Messages getFile(String user)throws RemoteException;
+    
+    public void setFile(byte[] msg, String user,String UserDestination,String fileName) throws RemoteException;
     
     public ConcurrentHashMap getHash() throws RemoteException;
     

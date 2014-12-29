@@ -59,10 +59,11 @@ public class RWserializable {
      * @throws Exception
      */
     public static byte[] readFile(String fileName) throws Exception {
-        FileInputStream fis = null;
-        BufferedInputStream bis = null;
-
         File myFile = new File(fileName);
+        FileInputStream fis = new FileInputStream(myFile);
+        BufferedInputStream bis = new BufferedInputStream(fis);
+
+        
         byte[] mybytearray = new byte[(int) myFile.length()];
         fis = new FileInputStream(myFile);
         bis.read(mybytearray, 0, mybytearray.length);
@@ -78,7 +79,7 @@ public class RWserializable {
      * @throws Exception
      */
     public static void writeFile(byte[] data, String fileName) throws Exception {
-        FileOutputStream fos = new FileOutputStream("/Files/"+fileName);
+        FileOutputStream fos = new FileOutputStream("src/Files/"+fileName);
         BufferedOutputStream bos = new BufferedOutputStream(fos);
         bos.write(data, 0, data.length);
         bos.flush();

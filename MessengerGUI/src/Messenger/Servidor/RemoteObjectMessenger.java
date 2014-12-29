@@ -44,6 +44,7 @@ public class RemoteObjectMessenger implements RemoteInterfaceMessenger {
     //byte[] file;
     Key sharedKey;
     byte[] cryptMEssage;
+    String fileName;
 
    ConcurrentHashMap<String, CopyOnWriteArrayList<Messages>> usersMessages;
 
@@ -114,29 +115,20 @@ public class RemoteObjectMessenger implements RemoteInterfaceMessenger {
             return false;
         return true;
     }  
-    
-    
-    
-    
-    
-    
 
-//    @Override
-//    public boolean hasFiles(String user) throws RemoteException {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//    }
-//
-//    @Override
-//    public byte[] getFile(String user) throws RemoteException {
-//        System.out.println("Getting message to" + user);
-//        return (byte []) usersMessages.get(user).remove(0);
-//    }
-//
-//    @Override
-//    public void setFile(byte[] msg, String user) throws RemoteException {
-//        this.file = msg;
-//         usersMessages.get(user).add(msg);
-//    }
+    @Override
+    public Messages getFile(String user) throws RemoteException {
+         System.out.println("Getting message to" + user);     
+        return  usersMessages.get(user).remove(0);
+    }
+
+    @Override
+    public void setFile(byte[] msg, String user, String UserDestination, String fileName) throws RemoteException {
+         System.out.println("Setting message to" + user);
+        usersMessages.get(user).add(new Messages(msg, UserDestination,fileName));
+    }
+
+  
 
 
 }

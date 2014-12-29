@@ -15,13 +15,26 @@ public class Messages implements Serializable {
     
     private byte[] Message;
     private String destination;
+    private String fileName;
 
     public Messages(byte[] Message, String destination) {
         this.Message = Message;
         this.destination = destination;
     }
 
-    
+    public Messages(byte[] Message, String destination, String fileName) {
+        this.Message = Message;
+        this.destination = destination;
+        this.fileName = fileName;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }  
     
     public String getDestination() {
         return destination;

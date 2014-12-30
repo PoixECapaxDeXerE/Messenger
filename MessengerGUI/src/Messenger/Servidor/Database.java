@@ -8,6 +8,7 @@ package Messenger.Servidor;
 import Messenger.Utils.RWserializable;
 import Messenger.Utils.Secrets;
 import Messenger.Utils.Utils;
+import java.security.Key;
 import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -52,22 +53,24 @@ public class Database {
                 String sql = "INSERT INTO USERS (ID,NAME,PASS,QUESTION,ANSWER,AVATAR) "
                         + "VALUES (" + id + ", '" + User + "', '" + Pass + "','" + Q + "','" + A + "','avatar" + User + "' );";
                 stmt.executeUpdate(sql);
-                
+
                 stmt.close();
                 c.commit();
                 c.close();
-                
+
             } catch (Exception e) {
                 System.err.println(e.getClass().getName() + ": " + e.getMessage());
                 System.exit(0);
             }
             System.out.println("Records created successfully");
-            RWserializable.writeFile(avatar, "avatar"+User);
-            
+            Key key = Secrets.getKeyFromFile();
+            Secrets.encryptFileToSave(avatar, "avatar" + User, key);
+            //RWserializable.writeFile(avatar, );
+
         } catch (Exception ex) {
             Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
     }
 
     public static void create() {
@@ -97,9 +100,10 @@ public class Database {
     }
 
     public static byte[] getAvatar(String user) {
-        byte[] AVATAR = null;String str=null;
+        byte[] AVATAR = null;
+        String str = null;
         try {
-            
+
             Connection c = null;
             Statement stmt = null;
             try {
@@ -107,13 +111,12 @@ public class Database {
                 c = DriverManager.getConnection("jdbc:sqlite:src/files/users.db");
                 c.setAutoCommit(false);
                 System.out.println("Opened database successfully");
-                
+
                 stmt = c.createStatement();
                 ResultSet rs = stmt.executeQuery("SELECT AVATAR FROM USERS Where NAME ='" + user + "';");
-                
-                
+
                 str = rs.getString("AVATAR");
-                
+
                 rs.close();
                 stmt.close();
                 c.close();
@@ -122,10 +125,9 @@ public class Database {
                 System.exit(0);
             }
             System.out.println("Operation done successfully");
-            
-           AVATAR= RWserializable.readFile("src/Files/"+str);
-            
-            
+            Key key = Secrets.getKeyFromFile();
+            AVATAR = Secrets.decryptFileToSave("src/Files/" + str, key);
+
         } catch (Exception ex) {
             Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -296,16 +298,13 @@ public class Database {
 
     public static void main(String[] args) {
         try {
-           
 
-            
             byte[] as = RWserializable.readFile("icon.png");
-           
-            
+
             //Database db = new Database();
             Database.create();
             // Database.select();
-            Database.insert("Pedro3", "1234", "ola", "ola",as);
+            Database.insert("Pedro3", "1234", "ola", "ola", as);
 //        db.insert("Pedro1", "1234", "ola", "ola");
 //        db.insert("Pedro2", "1234", "ola", "ola");
             System.out.println(Database.userExists("Pedro3"));
@@ -316,6 +315,41 @@ public class Database {
         } catch (Exception ex) {
             Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public static void changeKey() {
+        Connection c = null;
+        Statement stmt = null;
+        try {
+            Class.forName("org.sqlite.JDBC");
+            c = DriverManager.getConnection("jdbc:sqlite:src/files/users.db");
+            c.setAutoCommit(false);
+            System.out.println("Opened database successfully");
+
+            stmt = c.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM USERS;");
+            Key key = Secrets.getKeyFromFile();
+            byte[] file1 = Secrets.decryptFileToSave("src/Files/" + "Ricardo", key);
+            // Key key = Secrets.getKeyFromFile();
+            Secrets.GenerateKEYSaveFile();
+            Key newKey = Secrets.getKeyFromFile();
+
+            while (rs.next()) {
+
+                String name = rs.getString("AVATAR");
+
+                byte[] file = Secrets.decryptFileToSave("src/Files/" + name, key);
+                Secrets.encryptFileToSave(file, name, newKey);
+
+            }
+            rs.close();
+            stmt.close();
+            c.close();
+        } catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.exit(0);
+        }
+        System.out.println("Operation done successfully");
     }
 
 }

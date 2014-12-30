@@ -45,6 +45,7 @@ public class RemoteObjectMessenger implements RemoteInterfaceMessenger {
     Key sharedKey;
     byte[] cryptMEssage;
     String fileName;
+    byte[] avatar;
 
    ConcurrentHashMap<String, CopyOnWriteArrayList<Messages>> usersMessages;
 
@@ -126,6 +127,16 @@ public class RemoteObjectMessenger implements RemoteInterfaceMessenger {
     public void setFile(byte[] msg, String user, String UserDestination, String fileName) throws RemoteException {
          System.out.println("Setting message to" + user);
         usersMessages.get(user).add(new Messages(msg, UserDestination,fileName));
+    }
+
+    @Override
+    public void setAvatar(String user, byte[] arr) throws RemoteException {
+         System.out.println("Setting message to" + user);    
+    }
+
+    @Override
+    public byte[] getAvatar(String user) throws RemoteException {
+     return Database.getAvatar(user);
     }
 
   

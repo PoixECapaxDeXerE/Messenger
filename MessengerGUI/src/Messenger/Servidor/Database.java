@@ -5,7 +5,9 @@
  */
 package Messenger.Servidor;
 
-import static com.sun.xml.internal.fastinfoset.alphabet.BuiltInRestrictedAlphabets.table;
+import Messenger.Utils.RWserializable;
+import Messenger.Utils.Secrets;
+import Messenger.Utils.Utils;
 import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,35 +32,42 @@ public class Database {
         System.out.println("Opened database successfully");
     }
 
-    public static void insert(String User, String Pass, String Q, String A) {
-        Connection c = null;
-        Statement stmt = null;
-        int id = 0;
+    public static void insert(String User, String Pass, String Q, String A, byte[] avatar) {
         try {
-            Class.forName("org.sqlite.JDBC");
-            c = DriverManager.getConnection("jdbc:sqlite:src/files/users.db");
-            c.setAutoCommit(false);
-            System.out.println("Opened database successfully");
-            //vai buscar o valor maximo do id
-            stmt = c.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT max(id) as maxID FROM USERS;");
-            id = rs.getInt("maxID");
-            id++;
-            //insere na base de dados
-            stmt = c.createStatement();
-            String sql = "INSERT INTO USERS (ID,NAME,PASS,QUESTION,ANSWER) "
-                    + "VALUES (" + id + ", '" + User + "', '" + Pass + "','" + Q + "','" + A + "' );";
-            stmt.executeUpdate(sql);
-
-            stmt.close();
-            c.commit();
-            c.close();
-
-        } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(0);
+            Connection c = null;
+            Statement stmt = null;
+            int id = 0;
+            try {
+                Class.forName("org.sqlite.JDBC");
+                c = DriverManager.getConnection("jdbc:sqlite:src/files/users.db");
+                c.setAutoCommit(false);
+                System.out.println("Opened database successfully");
+                //vai buscar o valor maximo do id
+                stmt = c.createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT max(id) as maxID FROM USERS;");
+                id = rs.getInt("maxID");
+                id++;
+                //insere na base de dados
+                stmt = c.createStatement();
+                String sql = "INSERT INTO USERS (ID,NAME,PASS,QUESTION,ANSWER,AVATAR) "
+                        + "VALUES (" + id + ", '" + User + "', '" + Pass + "','" + Q + "','" + A + "','avatar" + User + "' );";
+                stmt.executeUpdate(sql);
+                
+                stmt.close();
+                c.commit();
+                c.close();
+                
+            } catch (Exception e) {
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
+                System.exit(0);
+            }
+            System.out.println("Records created successfully");
+            RWserializable.writeFile(avatar, "avatar"+User);
+            
+        } catch (Exception ex) {
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
         }
-        System.out.println("Records created successfully");
+        
     }
 
     public static void create() {
@@ -75,7 +84,8 @@ public class Database {
                     + " NAME           TEXT    NOT NULL, "
                     + " PASS           TEXT    NOT NULL, "
                     + " QUESTION       TEXT    NOT NULL,"
-                    + " ANSWER        TEXT    NOT NULL)";
+                    + " ANSWER         TEXT    NOT NULL,"
+                    + " AVATAR         TEXT    NOT NULL)";
             stmt.executeUpdate(sql);
             stmt.close();
             c.close();
@@ -84,6 +94,42 @@ public class Database {
             System.exit(0);
         }
         System.out.println("Table created successfully");
+    }
+
+    public static byte[] getAvatar(String user) {
+        byte[] AVATAR = null;String str=null;
+        try {
+            
+            Connection c = null;
+            Statement stmt = null;
+            try {
+                Class.forName("org.sqlite.JDBC");
+                c = DriverManager.getConnection("jdbc:sqlite:src/files/users.db");
+                c.setAutoCommit(false);
+                System.out.println("Opened database successfully");
+                
+                stmt = c.createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT AVATAR FROM USERS Where NAME ='" + user + "';");
+                
+                
+                str = rs.getString("AVATAR");
+                
+                rs.close();
+                stmt.close();
+                c.close();
+            } catch (Exception e) {
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
+                System.exit(0);
+            }
+            System.out.println("Operation done successfully");
+            
+           AVATAR= RWserializable.readFile("src/Files/"+str);
+            
+            
+        } catch (Exception ex) {
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return AVATAR;
     }
 
     public static void select(JTable table) {
@@ -209,7 +255,7 @@ public class Database {
             rs.close();
             stmt.close();
             c.close();
-            
+
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
@@ -217,8 +263,9 @@ public class Database {
         System.out.println("Operation done successfully");
         return Pass;
     }
-    public static boolean login(String user,String PassClient) {
-        String Pass=null;
+
+    public static boolean login(String user, String PassClient) {
+        String Pass = null;
         Connection c = null;
         Statement stmt = null;
         try {
@@ -235,29 +282,40 @@ public class Database {
             rs.close();
             stmt.close();
             c.close();
-            
+
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }
         System.out.println("Operation done successfully");
-        if(Pass.equals(PassClient)){
+        if (Pass.equals(PassClient)) {
             return true;
         }
         return false;
     }
-    
+
     public static void main(String[] args) {
-        //Database db = new Database();
-        //Database.create();
-       // Database.select();
-        // Database.insert("Pedro3", "1234", "ola", "ola");
+        try {
+           
+
+            
+            byte[] as = RWserializable.readFile("icon.png");
+           
+            
+            //Database db = new Database();
+            Database.create();
+            // Database.select();
+            Database.insert("Pedro3", "1234", "ola", "ola",as);
 //        db.insert("Pedro1", "1234", "ola", "ola");
 //        db.insert("Pedro2", "1234", "ola", "ola");
-        System.out.println(Database.userExists("Pedro3"));
-        System.out.println(Database.getPass("Pedro3"));
-        System.out.println(Database.correctAnswer("Pedro3", "ola1"));
-        System.out.println(Database.login("Pedro3", "12345"));
+            System.out.println(Database.userExists("Pedro3"));
+            System.out.println(Database.getPass("Pedro3"));
+            System.out.println(Database.correctAnswer("Pedro3", "ola1"));
+            System.out.println(Database.login("Pedro3", "12345"));
+            System.out.println(Database.getAvatar("Pedro3"));
+        } catch (Exception ex) {
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }

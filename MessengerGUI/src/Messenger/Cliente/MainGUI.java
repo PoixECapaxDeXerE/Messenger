@@ -31,7 +31,7 @@ public class MainGUI extends javax.swing.JFrame {
         frame.setSize(450, 660);
         login.setVisible(false);
         chat.setVisible(true);
-        chat.setBounds(0, 0, 400, 460);
+        chat.setBounds(0, 0, 400, 660);
         chat.init();
     }
 

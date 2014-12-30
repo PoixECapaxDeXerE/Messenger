@@ -57,4 +57,8 @@ public interface RemoteInterfaceMessenger extends Remote {
     public ConcurrentHashMap getHash() throws RemoteException;
     
     public boolean hasUsers() throws RemoteException;
+    
+    public void setAvatar(String user, byte[] arr) throws RemoteException;
+    
+   public byte[] getAvatar(String user) throws RemoteException;
 }

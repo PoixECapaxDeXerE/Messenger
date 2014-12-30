@@ -149,7 +149,7 @@ public class Secrets {
         return file;
     }
 
-    public static void main(String[] args) {
-        Secrets.GenerateKEYSaveFile();
-    }
+//    public static void main(String[] args) {
+//        Secrets.GenerateKEYSaveFile();
+//    }
 }

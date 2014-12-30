@@ -40,7 +40,7 @@ public class Utils {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                Image scaleImage = msg.getImage().getScaledInstance(100, 100, Image.SCALE_DEFAULT);
+                Image scaleImage = msg.getImage().getScaledInstance(75, 75, Image.SCALE_DEFAULT);
                 msg.setImage(scaleImage);
                 jtPane.insertIcon(msg);
             }

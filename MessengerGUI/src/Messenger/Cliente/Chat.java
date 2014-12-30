@@ -1,5 +1,3 @@
-//teste github
-
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -20,47 +18,50 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.security.Key;
 import java.security.KeyPair;
-import java.security.Signature;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JTextArea;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 
-//
 /**
  *
- * @author Ricardo
+ * @author pnlfe_000
  */
-public class Chat extends javax.swing.JPanel implements Runnable {
+public class Chat extends javax.swing.JFrame implements Runnable{
 
     CopyOnWriteArrayList<JTextPane> chats;
-    MainGUI mainGUI;
     Key sharedKey;
 
     RemoteInterfaceMessenger remote;
     DefaultListModel listModel;
     String REMOTE_NAME = "RemoteMsn";
-    String host = Login.txtServerIP.getText();
-    int port = Integer.parseInt(Login.txtServerPort.getText());
+    // String host = Login.txtServerIP.getText();
+
+    Login log;
+    String host;
+
+    int port;
     String UserName;
 
     /**
-     * Creates new form Chat
-     *
-     * @param mainGUI
+     * Creates new form Chat17
      */
-    public Chat(MainGUI mainGUI) {
-        chats = new CopyOnWriteArrayList<>();
-        this.mainGUI = mainGUI;
+    public Chat(Login login) {
         initComponents();
+        this.log = login;
+        port = Integer.parseInt(log.getTxtServerPort().getText());
+        host = log.getTxtServerIP().getText();
+
+        chats = new CopyOnWriteArrayList<>();
+
     }
 
     public void init() {
-        UserName = Login.getTxtUsername().getText();
+        UserName = log.getTxtUsername().getText();
         txtLoginUserName.setText(UserName);
 
         try {
@@ -78,7 +79,7 @@ public class Chat extends javax.swing.JPanel implements Runnable {
             sharedKey = (Key) Serializer.toObject(key);
 
             Utils.writeText(txtStatus, " Messenger : Security ready");
-            remote.connectUser(Login.txtUsername.getText());
+            remote.connectUser(log.txtUsername.getText());
             Utils.writeText(txtStatus, " Messeger : Autentication ready");
             //escutar o objecto remoto
             new Thread(this).start();
@@ -91,17 +92,33 @@ public class Chat extends javax.swing.JPanel implements Runnable {
 
     }
 
+        public void sendFile(int i, File file) {
+        try {
+            //enviaFicheiro
+            Utils.writeText(chats.get(i - 1), " Send : File:" + file.getName());
+            Utils.writeText(chats.get(i - 1), " \n ");
+
+            byte[] data = Serializer.toByteArray(RWserializable.readFile(file.getAbsolutePath()));
+            data = Secrets.encrypt(data, sharedKey);
+            //Assinar a mensagem
+            remote.setFile(data, jTab.getTitleAt(i), UserName, file.getName());
+            txtMessage.setText("");
+        } catch (Exception ex) {
+            Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     public void setAvatar() {
 
         try {
             byte[] data = remote.getAvatar(UserName);
             //decripta as mensagens
             //  data = Secrets.decrypt(data, sharedKey);
-           Object o = Serializer.toObject(data);
-           
-            ImageIcon icon = (ImageIcon)o;
- 
-            Utils.writeImage(paneAvatarChat, icon); 
+            Object o = Serializer.toObject(data);
+
+            ImageIcon icon = (ImageIcon) o;
+
+            Utils.writeImage(paneAvatarChat, icon);
         } catch (Exception ex) {
             Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -116,37 +133,34 @@ public class Chat extends javax.swing.JPanel implements Runnable {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane2 = new javax.swing.JScrollPane();
-        listModel = new DefaultListModel();
-        lstUsersOnline = new javax.swing.JList(listModel);
-        txtMessage = new javax.swing.JTextField();
-        btnSendMessage = new javax.swing.JButton();
-        jTab = new javax.swing.JTabbedPane();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        txtStatus = new javax.swing.JTextPane();
-        btnChatTo = new javax.swing.JButton();
-        btnFileSend = new javax.swing.JButton();
-        btnLogout = new javax.swing.JButton();
-        btnCloseConversation = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
         txtLoginUserName = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         paneAvatarChat = new javax.swing.JTextPane();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        listModel = new DefaultListModel();
+        lstUsersOnline = new javax.swing.JList(listModel);
+        btnChatTo = new javax.swing.JButton();
+        btnFileSend = new javax.swing.JButton();
+        btnCloseConversation = new javax.swing.JButton();
+        btnLogout = new javax.swing.JButton();
+        btnSendMessage = new javax.swing.JButton();
+        txtMessage = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        jTab = new javax.swing.JTabbedPane();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        txtStatus = new javax.swing.JTextPane();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jLabel2.setText("UserName:");
+
+        jScrollPane1.setViewportView(paneAvatarChat);
+
+        jLabel1.setText("Users Online:");
 
         jScrollPane2.setViewportView(lstUsersOnline);
-
-        btnSendMessage.setText("Send");
-        btnSendMessage.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSendMessageActionPerformed(evt);
-            }
-        });
-
-        jScrollPane3.setViewportView(txtStatus);
-
-        jTab.addTab("Status", jScrollPane3);
 
         btnChatTo.setText("Chat!");
         btnChatTo.addActionListener(new java.awt.event.ActionListener() {
@@ -162,13 +176,6 @@ public class Chat extends javax.swing.JPanel implements Runnable {
             }
         });
 
-        btnLogout.setText("Logout");
-        btnLogout.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnLogoutActionPerformed(evt);
-            }
-        });
-
         btnCloseConversation.setText("Close Conversation");
         btnCloseConversation.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -176,16 +183,28 @@ public class Chat extends javax.swing.JPanel implements Runnable {
             }
         });
 
-        jScrollPane1.setViewportView(paneAvatarChat);
+        btnLogout.setText("Logout");
+        btnLogout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLogoutActionPerformed(evt);
+            }
+        });
 
-        jLabel2.setText("UserName:");
+        btnSendMessage.setText("Send");
+        btnSendMessage.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSendMessageActionPerformed(evt);
+            }
+        });
 
         jLabel3.setText("Message to Send:");
 
-        jLabel1.setText("Users Online:");
+        jScrollPane3.setViewportView(txtStatus);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
+        jTab.addTab("Status", jScrollPane3);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
@@ -206,34 +225,33 @@ public class Chat extends javax.swing.JPanel implements Runnable {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnFileSend, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnLogout, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnChatTo, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnCloseConversation, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnSendMessage)
-                            .addComponent(jLabel1)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jScrollPane1)
+                            .addComponent(btnLogout, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE)
+                            .addComponent(btnChatTo, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE)
+                            .addComponent(btnCloseConversation, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE)
+                            .addComponent(btnSendMessage, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(18, 18, 18)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(txtLoginUserName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel2))
                                 .addGap(5, 5, 5)
                                 .addComponent(jTab, javax.swing.GroupLayout.PREFERRED_SIZE, 367, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -253,40 +271,12 @@ public class Chat extends javax.swing.JPanel implements Runnable {
                                 .addComponent(jLabel3)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(txtMessage))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnSendMessage)))
+                    .addComponent(btnSendMessage))
                 .addContainerGap())
         );
+
+        pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void btnSendMessageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendMessageActionPerformed
-        if (jTab.getSelectedIndex() != 0) {
-            try {
-                int i = jTab.getSelectedIndex();
-
-                Utils.writeText(chats.get(i - 1), " Send : " + txtMessage.getText());
-
-                byte[] data = Serializer.toByteArray(txtMessage.getText());
-                data = Secrets.encrypt(data, sharedKey);
-
-                remote.setSecretMessage(data, jTab.getTitleAt(i), UserName);
-                txtMessage.setText("");
-
-            } catch (Exception ex) {
-                Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }//GEN-LAST:event_btnSendMessageActionPerformed
-
-    private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
-        try {
-            remote.disconnectUser(UserName);
-            mainGUI.login();
-        } catch (RemoteException ex) {
-            Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }//GEN-LAST:event_btnLogoutActionPerformed
 
     private void btnChatToActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChatToActionPerformed
         String UserDestination = lstUsersOnline.getSelectedValue().toString();
@@ -294,7 +284,6 @@ public class Chat extends javax.swing.JPanel implements Runnable {
             newChatTo(UserDestination);
         }
     }//GEN-LAST:event_btnChatToActionPerformed
-
 
     private void btnFileSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFileSendActionPerformed
         if (jTab.getSelectedIndex() != 0) {
@@ -331,7 +320,6 @@ public class Chat extends javax.swing.JPanel implements Runnable {
             }
         }
 
-
     }//GEN-LAST:event_btnFileSendActionPerformed
 
     private void btnCloseConversationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseConversationActionPerformed
@@ -341,21 +329,37 @@ public class Chat extends javax.swing.JPanel implements Runnable {
         }
     }//GEN-LAST:event_btnCloseConversationActionPerformed
 
-    public void sendFile(int i, File file) {
+    private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
         try {
-            //enviaFicheiro
-            Utils.writeText(chats.get(i - 1), " Send : File:" + file.getName());
-            Utils.writeText(chats.get(i - 1), " \n ");
+            remote.disconnectUser(UserName);
 
-            byte[] data = Serializer.toByteArray(RWserializable.readFile(file.getAbsolutePath()));
-            data = Secrets.encrypt(data, sharedKey);
-            //Assinar a mensagem
-            remote.setFile(data, jTab.getTitleAt(i), UserName, file.getName());
-            txtMessage.setText("");
-        } catch (Exception ex) {
+            this.setVisible(false);
+            log.setVisible(true);
+        } catch (RemoteException ex) {
             Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
+    }//GEN-LAST:event_btnLogoutActionPerformed
+
+    private void btnSendMessageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendMessageActionPerformed
+        if (jTab.getSelectedIndex() != 0) {
+            try {
+                int i = jTab.getSelectedIndex();
+
+                Utils.writeText(chats.get(i - 1), " Send : " + txtMessage.getText());
+
+                byte[] data = Serializer.toByteArray(txtMessage.getText());
+                data = Secrets.encrypt(data, sharedKey);
+
+                remote.setSecretMessage(data, jTab.getTitleAt(i), UserName);
+                txtMessage.setText("");
+
+            } catch (Exception ex) {
+                Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_btnSendMessageActionPerformed
+
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     protected javax.swing.JButton btnChatTo;
@@ -376,6 +380,7 @@ public class Chat extends javax.swing.JPanel implements Runnable {
     protected javax.swing.JTextField txtMessage;
     private javax.swing.JTextPane txtStatus;
     // End of variables declaration//GEN-END:variables
+
 
     JTextArea tst = new JTextArea();
 
@@ -487,7 +492,6 @@ public class Chat extends javax.swing.JPanel implements Runnable {
                         }
                     }
                     Thread.sleep(5000);
-
                 }
             } catch (Exception ex) {
                 Logger.getLogger(Chat.class

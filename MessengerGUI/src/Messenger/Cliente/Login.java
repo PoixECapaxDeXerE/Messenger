@@ -64,6 +64,8 @@ public class Login extends javax.swing.JPanel {
             }
         });
 
+        txtPassword.setText("1");
+
         btnRegister.setText("New User?");
         btnRegister.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

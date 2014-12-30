@@ -5,9 +5,12 @@
  */
 package Messenger.Servidor;
 
+import static com.sun.xml.internal.fastinfoset.alphabet.BuiltInRestrictedAlphabets.table;
 import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -83,7 +86,8 @@ public class Database {
         System.out.println("Table created successfully");
     }
 
-    public static void select() {
+    public static void select(JTable table) {
+        DefaultTableModel m = (DefaultTableModel) table.getModel();
         Connection c = null;
         Statement stmt = null;
         try {
@@ -97,15 +101,21 @@ public class Database {
             while (rs.next()) {
                 int id = rs.getInt("id");
                 String name = rs.getString("NAME");
-                String age = rs.getString("PASS");
-                String address = rs.getString("QUESTION");
-                String salary = rs.getString("ANSWER");
+                String pass = rs.getString("PASS");
+                String quest = rs.getString("QUESTION");
+                String ans = rs.getString("ANSWER");
                 System.out.println("ID = " + id);
                 System.out.println("NAME " + name);
-                System.out.println("PASS = " + age);
-                System.out.println("QUESTION = " + address);
-                System.out.println("ANSWER = " + salary);
+                System.out.println("PASS = " + pass);
+                System.out.println("QUESTION = " + quest);
+                System.out.println("ANSWER = " + ans);
                 System.out.println();
+                Object aux[] = new Object[4];
+                aux[0] = name;
+                aux[1] = pass;
+                aux[2] = quest;
+                aux[3] = ans;
+                m.addRow(aux);
             }
             rs.close();
             stmt.close();
@@ -236,10 +246,11 @@ public class Database {
         }
         return false;
     }
+    
     public static void main(String[] args) {
         //Database db = new Database();
         //Database.create();
-        Database.select();
+       // Database.select();
         // Database.insert("Pedro3", "1234", "ola", "ola");
 //        db.insert("Pedro1", "1234", "ola", "ola");
 //        db.insert("Pedro2", "1234", "ola", "ola");

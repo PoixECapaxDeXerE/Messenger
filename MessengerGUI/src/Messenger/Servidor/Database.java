@@ -136,6 +136,7 @@ public class Database {
 
     public static void select(JTable table) {
         DefaultTableModel m = (DefaultTableModel) table.getModel();
+        m.setRowCount(0);
         Connection c = null;
         Statement stmt = null;
         try {

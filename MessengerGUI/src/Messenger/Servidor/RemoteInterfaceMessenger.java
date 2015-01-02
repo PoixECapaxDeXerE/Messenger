@@ -35,30 +35,27 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public interface RemoteInterfaceMessenger extends Remote {
 
-
-
     public byte[] getSharedkey(PublicKey clientKey) throws RemoteException;
 
-    //encriptar nomes
     public void connectUser(String user) throws RemoteException;
+
     public void disconnectUser(String user) throws RemoteException;
 
     public boolean hasMessages(String user) throws RemoteException;
-    
+
     public Messages getSecretMessage(String user) throws RemoteException;
 
-    public void setSecretMessage(byte[] msg, String user,String UserDestination) throws RemoteException;
-    
-    
-    public Messages getFile(String user)throws RemoteException;
-    
-    public void setFile(byte[] msg, String user,String UserDestination,String fileName) throws RemoteException;
-    
+    public void setSecretMessage(byte[] msg, String user, String UserDestination) throws RemoteException;
+
+    public Messages getFile(String user) throws RemoteException;
+
+    public void setFile(byte[] msg, String user, String UserDestination, String fileName) throws RemoteException;
+
     public ConcurrentHashMap getHash() throws RemoteException;
-    
+
     public boolean hasUsers() throws RemoteException;
-    
+
     public void setAvatar(String user, byte[] arr) throws RemoteException;
-    
-   public byte[] getAvatar(String user) throws RemoteException;
+
+    public byte[] getAvatar(String user) throws RemoteException;
 }

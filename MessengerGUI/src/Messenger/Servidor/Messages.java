@@ -50,7 +50,5 @@ public class Messages implements Serializable {
 
     public void setMessage(byte[] Message) {
         this.Message = Message;
-    }
-    
-    
+    }   
 }

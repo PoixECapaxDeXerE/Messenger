@@ -37,25 +37,27 @@ public interface RemoteInterfaceMessenger extends Remote {
 
     public byte[] getSharedkey(PublicKey clientKey) throws RemoteException;
 
-    public void connectUser(String user) throws RemoteException;
+    public boolean connectUser(byte[] user,byte[] Bpass) throws RemoteException;
 
-    public void disconnectUser(String user) throws RemoteException;
+    public void disconnectUser(byte[] user) throws RemoteException;
 
-    public boolean hasMessages(String user) throws RemoteException;
+    public boolean hasMessages(byte[] user) throws RemoteException;
 
-    public Messages getSecretMessage(String user) throws RemoteException;
+    public Messages getSecretMessage(byte[] user) throws RemoteException;
 
-    public void setSecretMessage(byte[] msg, String user, String UserDestination) throws RemoteException;
+    public void setSecretMessage(byte[] msg, byte[] user, byte[] UserDestination) throws RemoteException;
 
-    public Messages getFile(String user) throws RemoteException;
+    public Messages getFile(byte[] user) throws RemoteException;
 
-    public void setFile(byte[] msg, String user, String UserDestination, String fileName) throws RemoteException;
+    public void setFile(byte[] msg, byte[] user, byte[] UserDestination, byte[] fileName) throws RemoteException;
 
-    public ConcurrentHashMap getHash() throws RemoteException;
+    public byte[] getHash() throws RemoteException;
 
     public boolean hasUsers() throws RemoteException;
 
-    public void setAvatar(String user, byte[] arr) throws RemoteException;
+    public void setAvatar(byte[] user, byte[] arr) throws RemoteException;
 
-    public byte[] getAvatar(String user) throws RemoteException;
+    public byte[] getAvatar(byte[] user) throws RemoteException;
+    
+   
 }

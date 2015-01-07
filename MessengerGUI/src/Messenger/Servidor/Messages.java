@@ -14,33 +14,33 @@ import java.io.Serializable;
 public class Messages implements Serializable {
     
     private byte[] Message;
-    private String destination;
-    private String fileName;
+    private byte[] destination;
+    private byte[] fileName;
 
-    public Messages(byte[] Message, String destination) {
+    public Messages(byte[] Message, byte[] destination) {
         this.Message = Message;
         this.destination = destination;
     }
 
-    public Messages(byte[] Message, String destination, String fileName) {
+    public Messages(byte[] Message, byte[] destination, byte[] fileName) {
         this.Message = Message;
         this.destination = destination;
         this.fileName = fileName;
     }
 
-    public String getFileName() {
+    public byte[] getFileName() {
         return fileName;
     }
 
-    public void setFileName(String fileName) {
+    public void setFileName(byte[] fileName) {
         this.fileName = fileName;
     }  
     
-    public String getDestination() {
+    public byte[] getDestination() {
         return destination;
     }
 
-    public void setDestination(String destination) {
+    public void setDestination(byte[] destination) {
         this.destination = destination;
     }
 
@@ -51,4 +51,5 @@ public class Messages implements Serializable {
     public void setMessage(byte[] Message) {
         this.Message = Message;
     }   
+        
 }

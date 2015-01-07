@@ -6,6 +6,17 @@
 package Messenger.Cliente;
 
 import Messenger.Servidor.Database;
+import Messenger.Servidor.RemoteInterfaceMessenger;
+import Messenger.Utils.Secrets;
+import Messenger.Utils.Serializer;
+import Messenger.Utils.Utils;
+import java.io.IOException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.security.Key;
+import java.security.KeyPair;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JTextField;
 
 /**
@@ -16,6 +27,11 @@ public class Login extends javax.swing.JFrame {
 
     Chat chat;
     Register reg;
+    RemoteInterfaceMessenger remote;
+    Key sharedKey;
+    //Login log;
+    String host;
+    int port;
 
     /**
      * Creates new form Login1
@@ -24,6 +40,7 @@ public class Login extends javax.swing.JFrame {
         initComponents();
         chat = new Chat(this);
         reg = new Register(this);
+        init();
     }
 
     /**
@@ -173,28 +190,27 @@ public class Login extends javax.swing.JFrame {
     private void btnRegisterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegisterActionPerformed
         this.setVisible(false);
         reg.setVisible(true);
-        // mainGUI.reg();
+
     }//GEN-LAST:event_btnRegisterActionPerformed
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
         if (!txtPassword.getText().equals("")) {
-            if (Database.userExists(txtUsername.getText())) {
-                if (log()) {
- 
+            try {
+                byte[] user = Secrets.encrypt( Serializer.toByteArray(txtUsername.getText()), sharedKey);
+                byte[] pass = Secrets.encrypt( Serializer.toByteArray(txtPassword.getText()), sharedKey);
+                if (remote.connectUser(user, pass)) {
                     this.setVisible(false);
                     chat.setVisible(true);
                     chat.init();
                 } else {
                     lblwrongPass.setVisible(true);
                 }
+            } catch (Exception ex) {
+                Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }//GEN-LAST:event_btnLoginActionPerformed
-    public boolean log() {
-        String user = txtUsername.getText();
-        String Pass = txtPassword.getText();
-        return Database.login(user, Pass);
-    }
+
     private void txtUsernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUsernameActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtUsernameActionPerformed
@@ -235,35 +251,61 @@ public class Login extends javax.swing.JFrame {
         });
     }
 
-    public  JTextField getTxtPassword() {
+    public void init() {
+        String REMOTE_NAME = "RemoteMsn";
+        // UserName = getTxtUsername().getText();
+        port = Integer.parseInt(getTxtServerPort().getText());
+        host = getTxtServerIP().getText();
+
+        try {
+
+            //localizar o registry do servidor
+            Registry registry = LocateRegistry.getRegistry(host, port);
+            //obtem a referencia remota
+            remote = (RemoteInterfaceMessenger) registry.lookup(REMOTE_NAME);
+            //executr o servico
+            //Utils.writeText(txtStatus, " Messenger: ready");
+            KeyPair myKeys;
+            myKeys = Secrets.generateKeyPair();
+            byte[] key = remote.getSharedkey(myKeys.getPublic());
+            key = Secrets.decrypt(key, myKeys.getPrivate());
+            sharedKey = (Key) Serializer.toObject(key);
+
+        } catch (Exception ex) {
+            //   Utils.writeText(txtStatus, " Error");
+        }
+
+    }
+
+    public JTextField getTxtPassword() {
         return txtPassword;
     }
 
-    public  void setTxtPassword(JTextField txtPassword) {
+    public void setTxtPassword(JTextField txtPassword) {
         Login.txtPassword = txtPassword;
     }
 
-    public  JTextField getTxtServerIP() {
+    public JTextField getTxtServerIP() {
         return txtServerIP;
     }
 
-    public  void setTxtServerIP(JTextField txtServerIP) {
+    public void setTxtServerIP(JTextField txtServerIP) {
         Login.txtServerIP = txtServerIP;
     }
 
-    public  JTextField getTxtServerPort() {
+    public JTextField getTxtServerPort() {
         return txtServerPort;
     }
 
-    public  void setTxtServerPort(JTextField txtServerPort) {
+    public void setTxtServerPort(JTextField txtServerPort) {
         Login.txtServerPort = txtServerPort;
     }
 
-    public  JTextField getTxtUsername() {
+    public JTextField getTxtUsername() {
         return txtUsername;
     }
 
-    public  void setTxtUsername(JTextField txtUsername) {
+    public void setTxtUsername(JTextField txtUsername) {
         Login.txtUsername = txtUsername;
     }
 

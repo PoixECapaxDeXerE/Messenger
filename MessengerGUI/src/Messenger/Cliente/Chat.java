@@ -18,6 +18,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.security.Key;
 import java.security.KeyPair;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,20 +32,13 @@ import javax.swing.JTextPane;
  *
  * @author pnlfe_000
  */
-public class Chat extends javax.swing.JFrame implements Runnable{
+public class Chat extends javax.swing.JFrame implements Runnable {
 
     CopyOnWriteArrayList<JTextPane> chats;
     Key sharedKey;
-
     RemoteInterfaceMessenger remote;
     DefaultListModel listModel;
-    String REMOTE_NAME = "RemoteMsn";
-    // String host = Login.txtServerIP.getText();
-
     Login log;
-    String host;
-
-    int port;
     String UserName;
 
     /**
@@ -53,33 +47,24 @@ public class Chat extends javax.swing.JFrame implements Runnable{
     public Chat(Login login) {
         initComponents();
         this.log = login;
-        port = Integer.parseInt(log.getTxtServerPort().getText());
-        host = log.getTxtServerIP().getText();
-
         chats = new CopyOnWriteArrayList<>();
 
     }
 
     public void init() {
-        UserName = log.getTxtUsername().getText();
-        txtLoginUserName.setText(UserName);
 
         try {
+            this.sharedKey = log.sharedKey;
+            this.remote = log.remote;
+            this.UserName = log.getTxtUsername().getText();
 
-            //localizar o registry do servidor
-            Registry registry = LocateRegistry.getRegistry(host, port);
-            //obtem a referencia remota
-            remote = (RemoteInterfaceMessenger) registry.lookup(REMOTE_NAME);
-            //executr o servico
+            txtLoginUserName.setText(UserName);
+            txtLoginUserName.setEditable(false);
+
             Utils.writeText(txtStatus, " Messenger: ready");
-            KeyPair myKeys;
-            myKeys = Secrets.generateKeyPair();
-            byte[] key = remote.getSharedkey(myKeys.getPublic());
-            key = Secrets.decrypt(key, myKeys.getPrivate());
-            sharedKey = (Key) Serializer.toObject(key);
 
             Utils.writeText(txtStatus, " Messenger : Security ready");
-            remote.connectUser(log.txtUsername.getText());
+
             Utils.writeText(txtStatus, " Messeger : Autentication ready");
             //escutar o objecto remoto
             new Thread(this).start();
@@ -92,8 +77,15 @@ public class Chat extends javax.swing.JFrame implements Runnable{
 
     }
 
-        public void sendFile(int i, File file) {
+    public void sendFile(int i, File file) {
+        byte[] user = null;
+        byte[] destination = null;
+        byte[] fileName = null;
         try {
+            //encripta os dados
+            user = (Secrets.encrypt(Serializer.toByteArray(UserName), sharedKey));
+            destination = (Secrets.encrypt(Serializer.toByteArray(jTab.getTitleAt(i)), sharedKey));
+            fileName = (Secrets.encrypt(Serializer.toByteArray(file.getName()), sharedKey));
             //enviaFicheiro
             Utils.writeText(chats.get(i - 1), " Send : File:" + file.getName());
             Utils.writeText(chats.get(i - 1), " \n ");
@@ -101,17 +93,18 @@ public class Chat extends javax.swing.JFrame implements Runnable{
             byte[] data = Serializer.toByteArray(RWserializable.readFile(file.getAbsolutePath()));
             data = Secrets.encrypt(data, sharedKey);
             //Assinar a mensagem
-            remote.setFile(data, jTab.getTitleAt(i), UserName, file.getName());
+            remote.setFile(data, destination, user, fileName);
             txtMessage.setText("");
         } catch (Exception ex) {
             Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    public void setAvatar() {
 
+    public void setAvatar() {
+        byte[] user = null;
         try {
-            byte[] data = remote.getAvatar(UserName);
+            user = Secrets.encrypt(Serializer.toByteArray((UserName)), sharedKey);
+            byte[] data = remote.getAvatar(user);
             //decripta as mensagens
             //  data = Secrets.decrypt(data, sharedKey);
             Object o = Serializer.toObject(data);
@@ -286,12 +279,18 @@ public class Chat extends javax.swing.JFrame implements Runnable{
     }//GEN-LAST:event_btnChatToActionPerformed
 
     private void btnFileSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFileSendActionPerformed
+        byte[] user = null;
+        byte[] destination = null;
         if (jTab.getSelectedIndex() != 0) {
             try {
+                int i = jTab.getSelectedIndex();
+                //encripta os dados
+                user = Secrets.encrypt(Serializer.toByteArray(UserName), sharedKey);
+                destination = Secrets.encrypt(Serializer.toByteArray(jTab.getTitleAt(i)), sharedKey);
+                //para ficheiros
                 File file = Utils.getFile();
                 String ext = Files.probeContentType(file.toPath());
 
-                int i = jTab.getSelectedIndex();
                 //se nao conhecer o tipo retorna null
                 if (ext != null) {
                     //se for imagem
@@ -305,7 +304,7 @@ public class Chat extends javax.swing.JFrame implements Runnable{
                         byte[] data = Serializer.toByteArray(new ImageIcon(file.getAbsolutePath()));
                         data = Secrets.encrypt(data, sharedKey);
 
-                        remote.setSecretMessage(data, jTab.getTitleAt(i), UserName);
+                        remote.setSecretMessage(data, destination, user);
                         txtMessage.setText("");
                         //se nao for imagem e conhecer o tipo
                     } else {
@@ -330,27 +329,33 @@ public class Chat extends javax.swing.JFrame implements Runnable{
     }//GEN-LAST:event_btnCloseConversationActionPerformed
 
     private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
+        byte[] user = null;
         try {
-            remote.disconnectUser(UserName);
-
+            user = Serializer.toByteArray(Secrets.encrypt(Serializer.toByteArray(UserName), sharedKey));
+            remote.disconnectUser(user);
             this.setVisible(false);
             log.setVisible(true);
-        } catch (RemoteException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnLogoutActionPerformed
 
     private void btnSendMessageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendMessageActionPerformed
+        byte[] user = null;
+        byte[] destination = null;
         if (jTab.getSelectedIndex() != 0) {
             try {
                 int i = jTab.getSelectedIndex();
-
+                //encripta os dados
+                user = Secrets.encrypt(Serializer.toByteArray(UserName), sharedKey);
+                destination = Secrets.encrypt(Serializer.toByteArray(jTab.getTitleAt(i)), sharedKey);
+                //Envia
                 Utils.writeText(chats.get(i - 1), " Send : " + txtMessage.getText());
 
                 byte[] data = Serializer.toByteArray(txtMessage.getText());
                 data = Secrets.encrypt(data, sharedKey);
 
-                remote.setSecretMessage(data, jTab.getTitleAt(i), UserName);
+                remote.setSecretMessage(data, destination, user);
                 txtMessage.setText("");
 
             } catch (Exception ex) {
@@ -358,7 +363,6 @@ public class Chat extends javax.swing.JFrame implements Runnable{
             }
         }
     }//GEN-LAST:event_btnSendMessageActionPerformed
-
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -381,24 +385,29 @@ public class Chat extends javax.swing.JFrame implements Runnable{
     private javax.swing.JTextPane txtStatus;
     // End of variables declaration//GEN-END:variables
 
-
     JTextArea tst = new JTextArea();
 
     @Override
     public void run() {
+        byte[] user = null;
+
         while (true) {
             try {
-                while (remote.hasMessages(UserName)) {
-                    Messages m = remote.getSecretMessage(UserName);
+                //encripta os dados
+                user = Secrets.encrypt(Serializer.toByteArray(UserName), sharedKey);
+                //Envia
+                while (remote.hasMessages(user)) {
+                    Messages m = remote.getSecretMessage(user);
+                    String name = (String) Serializer.toObject(Secrets.decrypt(m.getDestination(), sharedKey));                  
                     byte[] data = m.getMessage();
                     //decripta as mensagens
                     data = Secrets.decrypt(data, sharedKey);
                     Object o = Serializer.toObject(data);
 
                     //se nao existir a Janela do Chat entao cria
-                    tst.setName(m.getDestination());
-                    if (!containsChatUser(m.getDestination()) && !m.getDestination().equals("txtStatus")) {
-                        newChatTo(m.getDestination());
+                    tst.setName(name);
+                    if (!containsChatUser(name) && !name.equals("txtStatus")) {
+                        newChatTo(name);
                     }
 
                     //se o conteudo das mensagens for uma String
@@ -406,12 +415,12 @@ public class Chat extends javax.swing.JFrame implements Runnable{
                         String msg = (String) o;
                         //se for para 1 utilizador
                         for (JTextPane jt : chats) {
-                            if (jt.getName().equals(m.getDestination())) {
+                            if (jt.getName().equals(name)) {
                                 Utils.writeText(jt, " Get : " + msg);
                             }
                         }
                         //se for para o Status
-                        if (m.getDestination().equals("txtStatus")) {
+                        if (name.equals("txtStatus")) {
                             Utils.writeText(txtStatus, " Get : " + msg);
                         }
                         //se for uma imagem mostra
@@ -420,7 +429,7 @@ public class Chat extends javax.swing.JFrame implements Runnable{
                         ImageIcon icon = (ImageIcon) o;
                         //se for para 1 utilizador
                         for (JTextPane jt : chats) {
-                            if (jt.getName().equals(m.getDestination())) {
+                            if (jt.getName().equals(name)) {
                                 Utils.writeText(jt, " Get : ");
                                 Utils.writeImage(jt, icon);
                                 Utils.writeText(jt, " \n ");
@@ -429,11 +438,11 @@ public class Chat extends javax.swing.JFrame implements Runnable{
                     } else {
                         byte[] file = (byte[]) o;
 
-                        String fileName = m.getFileName();
+                        String fileName = (String) Serializer.toObject(Secrets.decrypt(m.getFileName(), sharedKey));
 
                         RWserializable.writeFile(data, fileName);
                         for (JTextPane jt : chats) {
-                            if (jt.getName().equals(m.getDestination())) {
+                            if (jt.getName().equals(name)) {
                                 Utils.writeText(jt, " Get : File " + fileName);
                                 Utils.writeText(jt, " \n ");
                             }
@@ -443,9 +452,7 @@ public class Chat extends javax.swing.JFrame implements Runnable{
                 Thread.sleep(1000);
             } catch (Exception ex) {
                 System.out.println("erro");
-                Logger
-                        .getLogger(Chat.class
-                                .getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -483,7 +490,9 @@ public class Chat extends javax.swing.JFrame implements Runnable{
             try {
                 while (true) {
                     if (remote.hasUsers()) {
-                        for (Object users : remote.getHash().keySet()) {
+                        ConcurrentHashMap hash = (ConcurrentHashMap) Serializer.toObject(Secrets.decrypt(remote.getHash(), sharedKey));
+                        for (Object users : hash.keySet()) {
+
                             if (!((String) users).equals(UserName)) {
                                 if (!listModel.contains((String) users)) {
                                     listModel.addElement((String) users);

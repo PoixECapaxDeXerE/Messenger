@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.security.Key;
 import java.security.PublicKey;
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
@@ -40,13 +39,11 @@ import java.util.logging.Logger;
  */
 public class RemoteObjectMessenger implements RemoteInterfaceMessenger {
 
-    Object message = "Hello from RMIIII!";
-    //byte[] file;
+    Object message = "Bem Vindo ao Chat!";
     Key sharedKey;
     byte[] cryptMEssage;
     String fileName;
     byte[] avatar;
-
    ConcurrentHashMap<String, CopyOnWriteArrayList<Messages>> usersMessages;
 
     public RemoteObjectMessenger() {

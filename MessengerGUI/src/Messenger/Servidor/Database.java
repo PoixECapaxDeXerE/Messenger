@@ -7,7 +7,6 @@ package Messenger.Servidor;
 
 import Messenger.Utils.RWserializable;
 import Messenger.Utils.Secrets;
-import Messenger.Utils.Utils;
 import java.security.Key;
 import java.sql.*;
 import java.util.logging.Level;
@@ -33,7 +32,7 @@ public class Database {
         System.out.println("Opened database successfully");
     }
 
-    public static void insert(String User, String Pass, String Q, String A, byte[] avatar) {
+    public static boolean insert(String User, String Pass, String Q, String A, byte[] avatar) {
         try {
             Connection c = null;
             Statement stmt = null;
@@ -66,11 +65,11 @@ public class Database {
             Key key = Secrets.getKeyFromFile();
             Secrets.encryptFileToSave(avatar, "avatar" + User, key);
             //RWserializable.writeFile(avatar, );
-
+            return true;
         } catch (Exception ex) {
             Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+        return false;
     }
 
     public static void create() {

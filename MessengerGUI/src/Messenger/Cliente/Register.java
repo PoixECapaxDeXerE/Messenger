@@ -5,12 +5,15 @@
  */
 package Messenger.Cliente;
 
-import Messenger.Servidor.Database;
+import Messenger.Servidor.RemoteInterfaceMessenger;
+import Messenger.Utils.Secrets;
 import Messenger.Utils.Serializer;
 import Messenger.Utils.Utils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.rmi.RemoteException;
+import java.security.Key;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
@@ -23,6 +26,8 @@ public class Register extends javax.swing.JFrame {
 
     byte[] avatar;
     Login log;
+    RemoteInterfaceMessenger remote;
+    Key sharedKey;
 
     /**
      * Creates new form Register1
@@ -238,22 +243,36 @@ public class Register extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     public boolean registar() {
+        this.remote = log.remote;
+        this.sharedKey = log.sharedKey;
         String user = txtRegUsername.getText();
         String Pass = txtRegPassword.getText();
         String CheckPass = txtRegCheckPassword.getText();
         String quest = txtRegQuestion.getText();
         String ans = txtRegAnswer.getText();
+
+        try {
+            byte[] userE = Secrets.encrypt(Serializer.toByteArray(user), sharedKey);
+            byte[] passE = Secrets.encrypt(Serializer.toByteArray(Pass), sharedKey);
+            byte[] questE = Secrets.encrypt(Serializer.toByteArray(quest), sharedKey);
+            byte[] ansE = Secrets.encrypt(Serializer.toByteArray(ans), sharedKey);
+
+
         if (!Pass.equals(CheckPass)) {
             txtWarnings.setText("As Passwords não correspondem");
             return false;
-        } else if (Database.userExists(user)) {
+        } else if (remote.userExists(userE)) {
             txtWarnings.setText("O utilizador ja existe");
             return false;
         } else if (avatar == null) {
             txtWarnings.setText("Tem de escolher um AVATAR");
             return false;
         }
-        Database.insert(user, Pass, quest, ans, avatar);
+      
+            remote.insertUser(userE, passE, questE, ansE, avatar);
+        } catch (Exception ex) {
+            Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);
+        }
         txtWarnings.setText("O utilizador foi creado com sucessso!");
         return true;
     }

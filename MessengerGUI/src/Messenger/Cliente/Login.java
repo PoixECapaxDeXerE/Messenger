@@ -5,12 +5,9 @@
  */
 package Messenger.Cliente;
 
-import Messenger.Servidor.Database;
 import Messenger.Servidor.RemoteInterfaceMessenger;
 import Messenger.Utils.Secrets;
 import Messenger.Utils.Serializer;
-import Messenger.Utils.Utils;
-import java.io.IOException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.security.Key;

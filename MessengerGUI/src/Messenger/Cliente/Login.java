@@ -62,7 +62,6 @@ public class Login extends javax.swing.JFrame {
         txtServerPort = new javax.swing.JTextField();
         txtServerIP = new javax.swing.JTextField();
         lblToggleConnect = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -109,9 +108,6 @@ public class Login extends javax.swing.JFrame {
         lblToggleConnect.setForeground(new java.awt.Color(255, 0, 0));
         lblToggleConnect.setText("Disconnected");
 
-        jLabel5.setText("ERRO");
-        jLabel5.setVisible(false);
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -147,9 +143,7 @@ public class Login extends javax.swing.JFrame {
                         .addGap(118, 118, 118))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(lblwrongPass, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel5)
-                        .addGap(77, 77, 77))))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
             .addGroup(layout.createSequentialGroup()
                 .addGap(21, 21, 21)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -179,9 +173,7 @@ public class Login extends javax.swing.JFrame {
                     .addComponent(jLabel3)
                     .addComponent(btnLogin))
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblwrongPass)
-                    .addComponent(jLabel5))
+                .addComponent(lblwrongPass)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
@@ -278,7 +270,7 @@ public class Login extends javax.swing.JFrame {
             sharedKey = (Key) Serializer.toObject(key);
 
         } catch (Exception ex) {
-                jLabel5.setVisible(true);
+                //erro
         }
 
     }
@@ -323,7 +315,6 @@ public class Login extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
     protected javax.swing.JLabel lblToggleConnect;
     private javax.swing.JLabel lblwrongPass;
     protected static javax.swing.JTextField txtPassword;

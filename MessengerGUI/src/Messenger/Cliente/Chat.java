@@ -11,6 +11,8 @@ import Messenger.Utils.RWserializable;
 import Messenger.Utils.Secrets;
 import Messenger.Utils.Serializer;
 import Messenger.Utils.Utils;
+import java.awt.Toolkit;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.nio.file.Files;
 import java.security.Key;
@@ -172,7 +174,7 @@ public class Chat extends javax.swing.JFrame implements Runnable {
             }
         });
 
-        btnLogout.setText("Logout");
+        btnLogout.setText("Exit");
         btnLogout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnLogoutActionPerformed(evt);
@@ -273,16 +275,17 @@ public class Chat extends javax.swing.JFrame implements Runnable {
             newChatTo(UserDestination);
         }
     }//GEN-LAST:event_btnChatToActionPerformed
-///teste git upload ricardo
-    public boolean chatExits(String user){
+
+    public boolean chatExits(String user) {
         for (JTextPane chat : chats) {
-            if(chat.getName().equals(user))
+            if (chat.getName().equals(user)) {
                 return true;
+            }
         }
         return false;
     }
-    
-    
+
+
     private void btnFileSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFileSendActionPerformed
         byte[] user = null;
         byte[] destination = null;
@@ -327,17 +330,27 @@ public class Chat extends javax.swing.JFrame implements Runnable {
     }//GEN-LAST:event_btnFileSendActionPerformed
 
     private void btnCloseConversationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseConversationActionPerformed
+
         int i = jTab.getSelectedIndex();
         if (i != 0) {
+            for (JTextPane chat : chats) {
+                if (chat.getName().equals(jTab.getName())) {
+                    chats.remove(chat);
+                }
+            }
             jTab.remove(i);
         }
+
     }//GEN-LAST:event_btnCloseConversationActionPerformed
+
 
     private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
         byte[] user = null;
         try {
-            user = Serializer.toByteArray(Secrets.encrypt(Serializer.toByteArray(UserName), sharedKey));
+            user = Secrets.encrypt(Serializer.toByteArray(UserName), sharedKey);
             remote.disconnectUser(user);
+//            WindowEvent close = new WindowEvent(this, WindowEvent.WINDOW_CLOSING);
+//            Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(close);
             this.setVisible(false);
             log.setVisible(true);
         } catch (Exception ex) {
@@ -403,7 +416,7 @@ public class Chat extends javax.swing.JFrame implements Runnable {
                 //Envia
                 while (remote.hasMessages(user)) {
                     Messages m = remote.getSecretMessage(user);
-                    String name = (String) Serializer.toObject(Secrets.decrypt(m.getDestination(), sharedKey));                  
+                    String name = (String) Serializer.toObject(Secrets.decrypt(m.getDestination(), sharedKey));
                     byte[] data = m.getMessage();
                     //decripta as mensagens
                     data = Secrets.decrypt(data, sharedKey);
@@ -484,6 +497,7 @@ public class Chat extends javax.swing.JFrame implements Runnable {
         chats.add(j);
         jTab.add(UserDestination, new JScrollPane(chats.get(chats.size() - 1)));
         jTab.setSelectedIndex(jTab.getTabCount() - 1);
+        jTab.setName(UserDestination);
     }
 
     /**

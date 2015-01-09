@@ -273,7 +273,7 @@ public class Chat extends javax.swing.JFrame implements Runnable {
             newChatTo(UserDestination);
         }
     }//GEN-LAST:event_btnChatToActionPerformed
-///asdasdasdadasdassssssds
+///teste git upload ricardo
     public boolean chatExits(String user){
         for (JTextPane chat : chats) {
             if(chat.getName().equals(user))

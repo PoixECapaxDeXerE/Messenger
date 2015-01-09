@@ -93,7 +93,7 @@ public class ServerGUI extends javax.swing.JFrame {
         });
         jScrollPane2.setViewportView(tabbleUsers);
 
-        btnSelect.setText("VerUtilizadores");
+        btnSelect.setText("Users");
         btnSelect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSelectActionPerformed(evt);
@@ -116,7 +116,7 @@ public class ServerGUI extends javax.swing.JFrame {
                 .addComponent(btnSelect)
                 .addGap(65, 65, 65)
                 .addComponent(jButton2)
-                .addContainerGap(108, Short.MAX_VALUE))
+                .addContainerGap(152, Short.MAX_VALUE))
             .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
@@ -212,10 +212,12 @@ public class ServerGUI extends javax.swing.JFrame {
             //disponibiliza o objecto remoto
             registry.rebind(objectName, remote);
             //informacao do objecto
-            Utils.writeText(paneStatus, "Endereco                  : "
+            Utils.writeText(paneStatus, "Hostname/Address: "
                     + InetAddress.getLocalHost().toString());
-            Utils.writeText(paneStatus, "Porto                     : " + port);
-            Utils.writeText(paneStatus, "Objecto remoto disponivel : " + objectName);
+            Utils.writeText(paneStatus, "");
+            Utils.writeText(paneStatus, "Port: " + port);
+            Utils.writeText(paneStatus, "");
+            Utils.writeText(paneStatus, "Remote Object: " + objectName);
             
         } catch (Exception ex) {
             Logger.getLogger(ServerGUI.class.getName()).log(Level.SEVERE, null, ex);

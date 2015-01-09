@@ -83,7 +83,7 @@ public class Chat extends javax.swing.JFrame implements Runnable {
             destination = (Secrets.encrypt(Serializer.toByteArray(jTab.getTitleAt(i)), sharedKey));
             fileName = (Secrets.encrypt(Serializer.toByteArray(file.getName()), sharedKey));
             //enviaFicheiro
-            Utils.writeText(chats.get(i - 1), " Send : File:" + file.getName());
+            Utils.writeText(chats.get(i - 1), UserName +": File:" + file.getName());
             Utils.writeText(chats.get(i - 1), " \n ");
 
             byte[] data = Serializer.toByteArray(RWserializable.readFile(file.getAbsolutePath()));
@@ -303,7 +303,7 @@ public class Chat extends javax.swing.JFrame implements Runnable {
 
                         ImageIcon icon = new ImageIcon(file.getAbsolutePath());
 
-                        Utils.writeText(chats.get(i - 1), " Send : ");
+                        Utils.writeText(chats.get(i - 1), UserName + ": ");
                         Utils.writeImage(chats.get(i - 1), icon);
                         Utils.writeText(chats.get(i - 1), " \n ");
                         byte[] data = Serializer.toByteArray(new ImageIcon(file.getAbsolutePath()));
@@ -355,7 +355,7 @@ public class Chat extends javax.swing.JFrame implements Runnable {
                 user = Secrets.encrypt(Serializer.toByteArray(UserName), sharedKey);
                 destination = Secrets.encrypt(Serializer.toByteArray(jTab.getTitleAt(i)), sharedKey);
                 //Envia
-                Utils.writeText(chats.get(i - 1), " Send : " + txtMessage.getText());
+                Utils.writeText(chats.get(i - 1), UserName + ": " + txtMessage.getText());
 
                 byte[] data = Serializer.toByteArray(txtMessage.getText());
                 data = Secrets.encrypt(data, sharedKey);
@@ -421,12 +421,12 @@ public class Chat extends javax.swing.JFrame implements Runnable {
                         //se for para 1 utilizador
                         for (JTextPane jt : chats) {
                             if (jt.getName().equals(name)) {
-                                Utils.writeText(jt, " Get : " + msg);
+                                Utils.writeText(jt, jt.getName() + ": " + msg);
                             }
                         }
                         //se for para o Status
                         if (name.equals("txtStatus")) {
-                            Utils.writeText(txtStatus, " Get : " + msg);
+                            Utils.writeText(txtStatus, "Status : " + msg);
                         }
                         //se for uma imagem mostra
                     } else if (o instanceof ImageIcon) {

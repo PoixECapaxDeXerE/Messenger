@@ -13,11 +13,7 @@ import Messenger.Utils.Serializer;
 import Messenger.Utils.Utils;
 import java.io.File;
 import java.nio.file.Files;
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.security.Key;
-import java.security.KeyPair;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
@@ -273,11 +269,20 @@ public class Chat extends javax.swing.JFrame implements Runnable {
 
     private void btnChatToActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChatToActionPerformed
         String UserDestination = lstUsersOnline.getSelectedValue().toString();
-        if (lstUsersOnline.getSelectedValue() != null) {
+        if (lstUsersOnline.getSelectedValue() != null && !chatExits(UserDestination)) {
             newChatTo(UserDestination);
         }
     }//GEN-LAST:event_btnChatToActionPerformed
 
+    public boolean chatExits(String user){
+        for (JTextPane chat : chats) {
+            if(chat.getName().equals(user))
+                return true;
+        }
+        return false;
+    }
+    
+    
     private void btnFileSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFileSendActionPerformed
         byte[] user = null;
         byte[] destination = null;
@@ -492,7 +497,6 @@ public class Chat extends javax.swing.JFrame implements Runnable {
                     if (remote.hasUsers()) {
                         ConcurrentHashMap hash = (ConcurrentHashMap) Serializer.toObject(Secrets.decrypt(remote.getHash(), sharedKey));
                         for (Object users : hash.keySet()) {
-
                             if (!((String) users).equals(UserName)) {
                                 if (!listModel.contains((String) users)) {
                                     listModel.addElement((String) users);

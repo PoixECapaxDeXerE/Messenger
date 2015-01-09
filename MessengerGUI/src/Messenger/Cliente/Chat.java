@@ -349,10 +349,9 @@ public class Chat extends javax.swing.JFrame implements Runnable {
         try {
             user = Secrets.encrypt(Serializer.toByteArray(UserName), sharedKey);
             remote.disconnectUser(user);
-//            WindowEvent close = new WindowEvent(this, WindowEvent.WINDOW_CLOSING);
-//            Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(close);
-            this.setVisible(false);
-            log.setVisible(true);
+            WindowEvent close = new WindowEvent(this, WindowEvent.WINDOW_CLOSING);
+            Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(close);
+
         } catch (Exception ex) {
             Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
         }

@@ -259,13 +259,13 @@ public class Register extends javax.swing.JFrame {
             byte[] ansE = Secrets.encrypt(Serializer.toByteArray(ans), sharedKey);
 
             if (!Pass.equals(CheckPass)) {
-                txtWarnings.setText("As Passwords não correspondem");
+                txtWarnings.setText("The passwords do not correspond.");
                 return false;
             } else if (remote.userExists(userE)) {
-                txtWarnings.setText("O utilizador ja existe");
+                txtWarnings.setText("User exists! Try another...");
                 return false;
             } else if (avatar == null) {
-                txtWarnings.setText("Tem de escolher um AVATAR");
+                txtWarnings.setText("You have to choose an Avatar!");
                 return false;
             }
 
@@ -273,7 +273,7 @@ public class Register extends javax.swing.JFrame {
         } catch (Exception ex) {
             Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);
         }
-        txtWarnings.setText("O utilizador foi creado com sucessso!");
+        txtWarnings.setText("This user has been created.");
         return true;
     }
 }

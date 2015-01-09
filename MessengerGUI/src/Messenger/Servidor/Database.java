@@ -266,6 +266,33 @@ public class Database {
         return Pass;
     }
 
+    public static String getQuestion(String user) {
+        String question = null;
+        Connection c = null;
+        Statement stmt = null;
+        try {
+            Class.forName("org.sqlite.JDBC");
+            c = DriverManager.getConnection("jdbc:sqlite:src/files/users.db");
+            c.setAutoCommit(false);
+            System.out.println("Opened database successfully");
+
+            stmt = c.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM USERS where NAME = '" + user + "' ;");
+
+            question = rs.getString("QUESTION");
+
+            rs.close();
+            stmt.close();
+            c.close();
+
+        } catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.exit(0);
+        }
+        System.out.println("Operation done successfully");
+        return question;
+    }
+
     public static boolean login(String user, String PassClient) {
         String Pass = null;
         Connection c = null;

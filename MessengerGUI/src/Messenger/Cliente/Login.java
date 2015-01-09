@@ -24,6 +24,7 @@ public class Login extends javax.swing.JFrame {
 
     Chat chat;
     Register reg;
+    RetrievePass ret;
     RemoteInterfaceMessenger remote;
     Key sharedKey;
     //Login log;
@@ -37,6 +38,7 @@ public class Login extends javax.swing.JFrame {
         initComponents();
         chat = new Chat(this);
         reg = new Register(this);
+        ret = new RetrievePass(this);
         //init();
     }
 
@@ -77,6 +79,11 @@ public class Login extends javax.swing.JFrame {
         lblwrongPass.setVisible(false);
 
         jButton1.setText("Retrieve Password");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         btnRegister.setText("New User?");
         btnRegister.addActionListener(new java.awt.event.ActionListener() {
@@ -212,6 +219,12 @@ public class Login extends javax.swing.JFrame {
     private void txtUsernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUsernameActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtUsernameActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        this.setVisible(false);
+        ret.setVisible(true);
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments

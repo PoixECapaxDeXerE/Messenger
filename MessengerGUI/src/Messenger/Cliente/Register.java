@@ -190,6 +190,7 @@ public class Register extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnRegRegisterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegRegisterActionPerformed
+        log.init();
         registar();
     }//GEN-LAST:event_btnRegRegisterActionPerformed
 
@@ -257,18 +258,17 @@ public class Register extends javax.swing.JFrame {
             byte[] questE = Secrets.encrypt(Serializer.toByteArray(quest), sharedKey);
             byte[] ansE = Secrets.encrypt(Serializer.toByteArray(ans), sharedKey);
 
+            if (!Pass.equals(CheckPass)) {
+                txtWarnings.setText("As Passwords não correspondem");
+                return false;
+            } else if (remote.userExists(userE)) {
+                txtWarnings.setText("O utilizador ja existe");
+                return false;
+            } else if (avatar == null) {
+                txtWarnings.setText("Tem de escolher um AVATAR");
+                return false;
+            }
 
-        if (!Pass.equals(CheckPass)) {
-            txtWarnings.setText("As Passwords não correspondem");
-            return false;
-        } else if (remote.userExists(userE)) {
-            txtWarnings.setText("O utilizador ja existe");
-            return false;
-        } else if (avatar == null) {
-            txtWarnings.setText("Tem de escolher um AVATAR");
-            return false;
-        }
-      
             remote.insertUser(userE, passE, questE, ansE, avatar);
         } catch (Exception ex) {
             Logger.getLogger(Register.class.getName()).log(Level.SEVERE, null, ex);

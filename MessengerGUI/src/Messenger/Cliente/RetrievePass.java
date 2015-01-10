@@ -77,14 +77,29 @@ public class RetrievePass extends javax.swing.JFrame {
 
         btn_confirm.setText("Confirm");
         btn_confirm.setEnabled(false);
+        btn_confirm.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_confirmActionPerformed(evt);
+            }
+        });
 
         lbl_password.setText("Password:");
         lbl_password.setEnabled(false);
 
         txt_Password_Ret.setEditable(false);
         txt_Password_Ret.setEnabled(false);
+        txt_Password_Ret.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txt_Password_RetActionPerformed(evt);
+            }
+        });
 
         btn_back.setText("Back");
+        btn_back.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_backActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -149,12 +164,14 @@ public class RetrievePass extends javax.swing.JFrame {
 
     private void btn_nextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_nextActionPerformed
         // TODO add your handling code here:
-        
+        login.init();
+        this.remote = login.remote;
+        this.sharedKey = login.sharedKey;
+
         if (!txt_Username_Ret.getText().equals("")) {
-            System.out.println("1");
             try {
                 byte[] user = Secrets.encrypt(Serializer.toByteArray(txt_Username_Ret.getText()), sharedKey);
-                byte[] userE = Secrets.encrypt(Serializer.toByteArray(), sharedKey);
+                //byte[] userE = Secrets.encrypt(Serializer.toByteArray(), sharedKey);
                 System.out.println("2");
                 String question = (String) Serializer.toObject(Secrets.decrypt(remote.getQuestion(user), sharedKey));
                 System.out.println("3");
@@ -175,6 +192,31 @@ public class RetrievePass extends javax.swing.JFrame {
 
 
     }//GEN-LAST:event_btn_nextActionPerformed
+
+    private void btn_confirmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_confirmActionPerformed
+        if (!txt_Answer_Ret.getText().equals("")) {
+            try {
+                byte[] user = Secrets.encrypt(Serializer.toByteArray(txt_Username_Ret.getText()), sharedKey);
+                byte[] ans = Secrets.encrypt(Serializer.toByteArray(txt_Answer_Ret.getText()), sharedKey);
+
+                   if(remote.correctAns(user, ans)) {
+                       String passF =(String) Serializer.toObject( Secrets.decrypt(remote.getPass(user), sharedKey));
+                       txt_Password_Ret.setText(passF);
+                   }
+            } catch (Exception ex) {
+                Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_btn_confirmActionPerformed
+
+    private void txt_Password_RetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_Password_RetActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txt_Password_RetActionPerformed
+
+    private void btn_backActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_backActionPerformed
+       this.setVisible(false);
+       this.login.setVisible(true);
+    }//GEN-LAST:event_btn_backActionPerformed
 
     /**
      * @param args the command line arguments

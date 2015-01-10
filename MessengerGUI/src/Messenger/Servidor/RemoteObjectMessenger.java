@@ -252,38 +252,35 @@ public class RemoteObjectMessenger implements RemoteInterfaceMessenger {
 
     @Override
     public byte[] getPass(byte[] User) throws RemoteException {
-        String user = null;
-        
         try {
-            user = (String) Serializer.toObject(Secrets.decrypt(User, sharedKey));
-        } catch (IOException ex) {
-            Logger.getLogger(RemoteObjectMessenger.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(RemoteObjectMessenger.class.getName()).log(Level.SEVERE, null, ex);
-        }
+            String user = null;
+            byte[] question = null;
 
-        if (Database.userExists(user)) {
-            return Database.getPass(user);
-        } else {
-            return null;
+            user = (String) Serializer.toObject(Secrets.decrypt(User, sharedKey));
+
+            if (Database.userExists(user)) {
+                question = Secrets.encrypt(Serializer.toByteArray(Database.getPass(user)), sharedKey);
+                return question;
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(RemoteObjectMessenger.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return null;
     }
 
     @Override
     public byte[] getQuestion(byte[] User) throws RemoteException {
-        
+
         String user = null;
         byte[] question = null;
-        
+
         try {
             user = (String) Serializer.toObject(Secrets.decrypt(User, sharedKey));
-        } catch (IOException ex) {
-            Logger.getLogger(RemoteObjectMessenger.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(RemoteObjectMessenger.class.getName()).log(Level.SEVERE, null, ex);
         }
         if (Database.userExists(user)) {
-            
+
             try {
                 question = Secrets.encrypt(Serializer.toByteArray(Database.getQuestion(user)), sharedKey);
             } catch (IOException ex) {
@@ -293,6 +290,24 @@ public class RemoteObjectMessenger implements RemoteInterfaceMessenger {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public boolean correctAns(byte[] User, byte[] ans) throws RemoteException {
+        String user = null;
+        String ansStr = null;
+        byte[] question = null;
+
+        try {
+            user = (String) Serializer.toObject(Secrets.decrypt(User, sharedKey));
+            ansStr = (String) Serializer.toObject(Secrets.decrypt(ans, sharedKey));
+        } catch (Exception ex) {
+            Logger.getLogger(RemoteObjectMessenger.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        if (Database.userExists(user)) {
+            return Database.correctAnswer(user, ansStr);
+        } 
+        return false;
     }
 
 }

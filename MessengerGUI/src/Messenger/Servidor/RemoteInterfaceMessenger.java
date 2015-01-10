@@ -66,4 +66,6 @@ public interface RemoteInterfaceMessenger extends Remote {
    public byte[] getPass(byte[] User) throws RemoteException;
    
    public byte[] getQuestion(byte[] User) throws RemoteException;
+   
+   public boolean correctAns(byte[] User,byte[] ans) throws RemoteException;
 }

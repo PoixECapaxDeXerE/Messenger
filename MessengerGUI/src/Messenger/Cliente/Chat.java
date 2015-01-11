@@ -517,11 +517,10 @@ public class Chat extends javax.swing.JFrame implements Runnable {
                 while (true) {
                     if (remote.hasUsers()) {
                         ConcurrentHashMap hash = (ConcurrentHashMap) Serializer.toObject(Secrets.decrypt(remote.getHash(), sharedKey));
+                        listModel.clear();
                         for (Object users : hash.keySet()) {
                             if (!((String) users).equals(UserName)) {
-                                if (!listModel.contains((String) users)) {
-                                    listModel.addElement((String) users);
-                                }
+                                listModel.addElement((String) users);
                             }
                         }
                     }

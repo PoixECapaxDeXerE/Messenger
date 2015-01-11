@@ -37,17 +37,16 @@ public interface RemoteInterfaceMessenger extends Remote {
 
     public byte[] getSharedkey(PublicKey clientKey) throws RemoteException;
 
-    public boolean connectUser(byte[] user,byte[] Bpass) throws RemoteException;
+    public boolean connectUser(byte[] user, byte[] Bpass) throws RemoteException;
 
     public void disconnectUser(byte[] user) throws RemoteException;
 
     public boolean hasMessages(byte[] user) throws RemoteException;
 
-    public Messages getSecretMessage(byte[] user) throws RemoteException;
+    public byte[] getSecretMessage(byte[] user) throws RemoteException;
 
     public void setSecretMessage(byte[] msg, byte[] user, byte[] UserDestination) throws RemoteException;
 
-    public Messages getFile(byte[] user) throws RemoteException;
 
     public void setFile(byte[] msg, byte[] user, byte[] UserDestination, byte[] fileName) throws RemoteException;
 
@@ -55,17 +54,15 @@ public interface RemoteInterfaceMessenger extends Remote {
 
     public boolean hasUsers() throws RemoteException;
 
-    public void setAvatar(byte[] user, byte[] arr) throws RemoteException;
-
     public byte[] getAvatar(byte[] user) throws RemoteException;
-    
-   public boolean userExists(byte[] user) throws RemoteException;
-   
-   public boolean insertUser(byte[] User, byte[] Pass, byte[] Q, byte[] A, byte[] avatar) throws RemoteException;
-   
-   public byte[] getPass(byte[] User) throws RemoteException;
-   
-   public byte[] getQuestion(byte[] User) throws RemoteException;
-   
-   public boolean correctAns(byte[] User,byte[] ans) throws RemoteException;
+
+    public boolean userExists(byte[] user) throws RemoteException;
+
+    public boolean insertUser(byte[] User, byte[] Pass, byte[] Q, byte[] A, byte[] avatar) throws RemoteException;
+
+    public byte[] getPass(byte[] User) throws RemoteException;
+
+    public byte[] getQuestion(byte[] User) throws RemoteException;
+
+    public boolean correctAns(byte[] User, byte[] ans) throws RemoteException;
 }

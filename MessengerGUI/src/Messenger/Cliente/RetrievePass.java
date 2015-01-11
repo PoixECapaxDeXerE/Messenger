@@ -5,12 +5,10 @@
  */
 package Messenger.Cliente;
 
-import static Messenger.Cliente.Login.txtPassword;
 import Messenger.Servidor.RemoteInterfaceMessenger;
 import Messenger.Utils.Secrets;
 import Messenger.Utils.Serializer;
 import java.security.Key;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

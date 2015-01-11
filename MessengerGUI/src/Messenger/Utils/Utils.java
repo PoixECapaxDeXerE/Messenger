@@ -46,7 +46,16 @@ public class Utils {
             }
         });
     }
-
+    public static void writeImage(final JTextPane jtPane, final ImageIcon msg, final int size) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                Image scaleImage = msg.getImage().getScaledInstance(size, size, Image.SCALE_DEFAULT);
+                msg.setImage(scaleImage);
+                jtPane.insertIcon(msg);
+            }
+        });
+    }
     public static File getFile() {
 
         // create a file chooser

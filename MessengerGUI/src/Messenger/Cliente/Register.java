@@ -12,7 +12,6 @@ import Messenger.Utils.Utils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.rmi.RemoteException;
 import java.security.Key;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -199,8 +198,7 @@ public class Register extends javax.swing.JFrame {
                     Utils.writeImage(PaneAvatar, icon);
 
                     avatar = Serializer.toByteArray(new ImageIcon(file.getAbsolutePath()));
-                    //avatar = Secrets.encrypt(avatar, mainGUI.chat.sharedKey);
-                    //mainGUI.chat
+
                 }
             }
         } catch (IOException ex) {

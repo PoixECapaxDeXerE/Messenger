@@ -85,7 +85,9 @@ public class Chat extends javax.swing.JFrame implements Runnable {
             destination = (Secrets.encrypt(Serializer.toByteArray(jTab.getTitleAt(i)), sharedKey));
             fileName = (Secrets.encrypt(Serializer.toByteArray(file.getName()), sharedKey));
             //enviaFicheiro
-            Utils.writeText(chats.get(i - 1), UserName +": File:" + file.getName());
+            ImageIcon icon1 = (ImageIcon) Serializer.toObject(Secrets.decrypt(remote.getAvatar(user), sharedKey));
+            Utils.writeImage(chats.get(i - 1), icon1, 40);
+            Utils.writeText(chats.get(i - 1), UserName + ": File:" + file.getName());
             Utils.writeText(chats.get(i - 1), " \n ");
 
             byte[] data = Serializer.toByteArray(RWserializable.readFile(file.getAbsolutePath()));
@@ -102,13 +104,8 @@ public class Chat extends javax.swing.JFrame implements Runnable {
         byte[] user = null;
         try {
             user = Secrets.encrypt(Serializer.toByteArray((UserName)), sharedKey);
-            byte[] data = remote.getAvatar(user);
             //decripta as mensagens
-            //  data = Secrets.decrypt(data, sharedKey);
-            Object o = Serializer.toObject(data);
-
-            ImageIcon icon = (ImageIcon) o;
-
+            ImageIcon icon = (ImageIcon) Serializer.toObject(Secrets.decrypt(remote.getAvatar(user), sharedKey));
             Utils.writeImage(paneAvatarChat, icon);
         } catch (Exception ex) {
             Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
@@ -147,6 +144,7 @@ public class Chat extends javax.swing.JFrame implements Runnable {
 
         jLabel2.setText("UserName:");
 
+        paneAvatarChat.setEditable(false);
         jScrollPane1.setViewportView(paneAvatarChat);
 
         jLabel1.setText("Users Online:");
@@ -303,7 +301,8 @@ public class Chat extends javax.swing.JFrame implements Runnable {
                     if (ext.contains("image")) {
 
                         ImageIcon icon = new ImageIcon(file.getAbsolutePath());
-
+                        ImageIcon icon1 = (ImageIcon) Serializer.toObject(Secrets.decrypt(remote.getAvatar(user), sharedKey));
+                        Utils.writeImage(chats.get(i - 1), icon1, 40);
                         Utils.writeText(chats.get(i - 1), UserName + ": ");
                         Utils.writeImage(chats.get(i - 1), icon);
                         Utils.writeText(chats.get(i - 1), " \n ");
@@ -364,6 +363,8 @@ public class Chat extends javax.swing.JFrame implements Runnable {
                 //encripta os dados
                 user = Secrets.encrypt(Serializer.toByteArray(UserName), sharedKey);
                 destination = Secrets.encrypt(Serializer.toByteArray(jTab.getTitleAt(i)), sharedKey);
+                ImageIcon icon1 = (ImageIcon) Serializer.toObject(Secrets.decrypt(remote.getAvatar(user), sharedKey));
+                Utils.writeImage(chats.get(i - 1), icon1, 40);
                 //Envia
                 Utils.writeText(chats.get(i - 1), UserName + ": " + txtMessage.getText());
 
@@ -412,12 +413,12 @@ public class Chat extends javax.swing.JFrame implements Runnable {
                 user = Secrets.encrypt(Serializer.toByteArray(UserName), sharedKey);
                 //Envia
                 while (remote.hasMessages(user)) {
-                    Messages m = remote.getSecretMessage(user);
+
+                    Messages m = (Messages) Serializer.toObject(Secrets.decrypt(remote.getSecretMessage(user), sharedKey));
                     String name = (String) Serializer.toObject(Secrets.decrypt(m.getDestination(), sharedKey));
                     byte[] data = m.getMessage();
                     //decripta as mensagens
-                    data = Secrets.decrypt(data, sharedKey);
-                    Object o = Serializer.toObject(data);
+                    Object o = Serializer.toObject(Secrets.decrypt(data, sharedKey));
 
                     //se nao existir a Janela do Chat entao cria
                     tst.setName(name);
@@ -431,6 +432,9 @@ public class Chat extends javax.swing.JFrame implements Runnable {
                         //se for para 1 utilizador
                         for (JTextPane jt : chats) {
                             if (jt.getName().equals(name)) {
+                                //poe avatar da origem                
+                                ImageIcon icon1 = (ImageIcon) Serializer.toObject(Secrets.decrypt(remote.getAvatar(m.getDestination()), sharedKey));
+                                Utils.writeImage(jt, icon1, 40);
                                 Utils.writeText(jt, jt.getName() + ": " + msg);
                             }
                         }
@@ -440,11 +444,15 @@ public class Chat extends javax.swing.JFrame implements Runnable {
                         }
                         //se for uma imagem mostra
                     } else if (o instanceof ImageIcon) {
+
                         //imagem para mostrar
                         ImageIcon icon = (ImageIcon) o;
                         //se for para 1 utilizador
                         for (JTextPane jt : chats) {
                             if (jt.getName().equals(name)) {
+                                ImageIcon icon1 = (ImageIcon) Serializer.toObject(Secrets.decrypt(remote.getAvatar(m.getDestination()), sharedKey));
+                                Utils.writeImage(jt, icon1, 40);
+
                                 Utils.writeText(jt, " Get : ");
                                 Utils.writeImage(jt, icon);
                                 Utils.writeText(jt, " \n ");
@@ -458,6 +466,8 @@ public class Chat extends javax.swing.JFrame implements Runnable {
                         RWserializable.writeFile(data, fileName);
                         for (JTextPane jt : chats) {
                             if (jt.getName().equals(name)) {
+                                ImageIcon icon1 = (ImageIcon) Serializer.toObject(Secrets.decrypt(remote.getAvatar(m.getDestination()), sharedKey));
+                                Utils.writeImage(jt, icon1, 40);
                                 Utils.writeText(jt, " Get : File " + fileName);
                                 Utils.writeText(jt, " \n ");
                             }
@@ -523,5 +533,4 @@ public class Chat extends javax.swing.JFrame implements Runnable {
             }
         }
     });
-
 }

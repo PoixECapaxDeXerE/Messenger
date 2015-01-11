@@ -183,6 +183,7 @@ public class RemoteObjectMessenger implements RemoteInterfaceMessenger {
     @Override
     public byte[] getAvatar(byte[] user1) throws RemoteException {
         String user = null;
+        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         byte[] mss = null;
         try {
             user = (String) Serializer.toObject(Secrets.decrypt(user1, sharedKey));

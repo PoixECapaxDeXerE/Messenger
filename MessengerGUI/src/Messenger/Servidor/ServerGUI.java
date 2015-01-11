@@ -71,6 +71,7 @@ public class ServerGUI extends javax.swing.JFrame {
         txtStatus.setText("OFF");
         txtStatus.setForeground(new java.awt.Color(255, 0, 0));
 
+        paneStatus.setEditable(false);
         jScrollPane1.setViewportView(paneStatus);
 
         jTabbedPane1.addTab("Status", jScrollPane1);
@@ -218,7 +219,7 @@ public class ServerGUI extends javax.swing.JFrame {
             Utils.writeText(paneStatus, "Port: " + port);
             Utils.writeText(paneStatus, "");
             Utils.writeText(paneStatus, "Remote Object: " + objectName);
-            
+            btnStart.setEnabled(false);
         } catch (Exception ex) {
             Logger.getLogger(ServerGUI.class.getName()).log(Level.SEVERE, null, ex);
         }

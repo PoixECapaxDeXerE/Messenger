@@ -171,17 +171,14 @@ public class RetrievePass extends javax.swing.JFrame {
         if (!txt_Username_Ret.getText().equals("")) {
             try {
                 byte[] user = Secrets.encrypt(Serializer.toByteArray(txt_Username_Ret.getText()), sharedKey);
-                //byte[] userE = Secrets.encrypt(Serializer.toByteArray(), sharedKey);
-                System.out.println("2");
                 String question = (String) Serializer.toObject(Secrets.decrypt(remote.getQuestion(user), sharedKey));
-                System.out.println("3");
                 if (question != null) {
                     lbl_question.setEnabled(true);
                     lbl_answer.setEnabled(true);
-                    lbl_password.setEnabled(true);
+//                    lbl_password.setEnabled(true);
                     txt_Answer_Ret.setEnabled(true);
                     txt_Question_Ret.setEnabled(true);
-                    txt_Password_Ret.setEnabled(true);
+//                    txt_Password_Ret.setEnabled(true);
                     btn_confirm.setEnabled(true);
                     txt_Question_Ret.setText(question);
                 }
@@ -199,10 +196,16 @@ public class RetrievePass extends javax.swing.JFrame {
                 byte[] user = Secrets.encrypt(Serializer.toByteArray(txt_Username_Ret.getText()), sharedKey);
                 byte[] ans = Secrets.encrypt(Serializer.toByteArray(txt_Answer_Ret.getText()), sharedKey);
 
-                   if(remote.correctAns(user, ans)) {
-                       String passF =(String) Serializer.toObject( Secrets.decrypt(remote.getPass(user), sharedKey));
-                       txt_Password_Ret.setText(passF);
-                   }
+                if (remote.correctAns(user, ans)) {
+                    String passF = (String) Serializer.toObject(Secrets.decrypt(remote.getPass(user), sharedKey));
+                    lbl_password.setEnabled(true);
+                    txt_Password_Ret.setEnabled(true);
+                    txt_Password_Ret.setText(passF);
+                } else {
+                    lbl_password.setEnabled(false);
+                    txt_Password_Ret.setEnabled(true);
+                    txt_Password_Ret.setText("The answer is invalid!");
+                }
             } catch (Exception ex) {
                 Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -214,8 +217,8 @@ public class RetrievePass extends javax.swing.JFrame {
     }//GEN-LAST:event_txt_Password_RetActionPerformed
 
     private void btn_backActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_backActionPerformed
-       this.setVisible(false);
-       this.login.setVisible(true);
+        this.setVisible(false);
+        this.login.setVisible(true);
     }//GEN-LAST:event_btn_backActionPerformed
 
     /**

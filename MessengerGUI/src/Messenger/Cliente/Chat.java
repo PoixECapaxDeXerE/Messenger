@@ -59,11 +59,11 @@ public class Chat extends javax.swing.JFrame implements Runnable {
             txtLoginUserName.setText(UserName);
             txtLoginUserName.setEditable(false);
 
-            Utils.writeText(txtStatus, " Messenger: ready");
+            Utils.writeText(txtStatus, "Messenger: ready");
 
-            Utils.writeText(txtStatus, " Messenger : Security ready");
+            Utils.writeText(txtStatus, "Messenger : Security ready");
 
-            Utils.writeText(txtStatus, " Messeger : Autentication ready");
+            Utils.writeText(txtStatus, "Messenger : Autentication ready");
             //escutar o objecto remoto
             new Thread(this).start();
 
@@ -413,7 +413,7 @@ public class Chat extends javax.swing.JFrame implements Runnable {
                 //Envia
                 while (remote.hasMessages(user)) {
                     Messages m = remote.getSecretMessage(user);
-                    String name = (String) Serializer.toObject(Secrets.decrypt(m.getDestination(), sharedKey));
+                    String name = (String) Serializer.toObject(Secrets.decrypt(m.getSource(), sharedKey));
                     byte[] data = m.getMessage();
                     //decripta as mensagens
                     data = Secrets.decrypt(data, sharedKey);

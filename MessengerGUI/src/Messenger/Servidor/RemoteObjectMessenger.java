@@ -124,24 +124,27 @@ public class RemoteObjectMessenger implements RemoteInterfaceMessenger {
     }
 
     @Override
-    public Messages getSecretMessage(byte[] user1) throws RemoteException {
+    public byte[] getSecretMessage(byte[] user1) throws RemoteException {
         String user = null;
+        byte[] mss = null;
         try {
             user = (String) Serializer.toObject(Secrets.decrypt(user1, sharedKey));
+
+            System.out.println("Getting message to" + user);
+           mss= Secrets.encrypt(Serializer.toByteArray(usersMessages.get(user).remove(0)), sharedKey);
         } catch (Exception ex) {
             Logger.getLogger(RemoteObjectMessenger.class.getName()).log(Level.SEVERE, null, ex);
         }
-        System.out.println("Getting message to" + user);
-        return usersMessages.get(user).remove(0);
+        return mss;
     }
 
     @Override
-    public void setSecretMessage(byte[] msg, byte[] destUser, byte[] sourceUser) throws RemoteException {
+    public void setSecretMessage(byte[] msg, byte[] user1, byte[] UserDestination) throws RemoteException {
         try {
             String user = null;
-            user = (String) Serializer.toObject(Secrets.decrypt(destUser, sharedKey));
+            user = (String) Serializer.toObject(Secrets.decrypt(user1, sharedKey));
             System.out.println("Setting message to" + user);
-            usersMessages.get(user).add(new Messages(msg, sourceUser));
+            usersMessages.get(user).add(new Messages(msg, UserDestination));
         } catch (Exception ex) {
             Logger.getLogger(RemoteObjectMessenger.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -167,19 +170,6 @@ public class RemoteObjectMessenger implements RemoteInterfaceMessenger {
     }
 
     @Override
-    public Messages getFile(byte[] user1) throws RemoteException {
-        String user = null;
-        try {
-            user = (String) Serializer.toObject(Secrets.decrypt(user1, sharedKey));
-            System.out.println("Getting message to" + user);
-
-        } catch (Exception ex) {
-            Logger.getLogger(RemoteObjectMessenger.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return usersMessages.get(user).remove(0);
-    }
-
-    @Override
     public void setFile(byte[] msg, byte[] user1, byte[] UserDestination, byte[] fileName) throws RemoteException {
         try {
             String user = (String) Serializer.toObject(Secrets.decrypt(user1, sharedKey));
@@ -191,25 +181,17 @@ public class RemoteObjectMessenger implements RemoteInterfaceMessenger {
     }
 
     @Override
-    public void setAvatar(byte[] user1, byte[] arr) throws RemoteException {
-        try {
-            String user = (String) Serializer.toObject(Secrets.decrypt(user1, sharedKey));
-            System.out.println("Setting message to" + user);
-        } catch (Exception ex) {
-            Logger.getLogger(RemoteObjectMessenger.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    @Override
     public byte[] getAvatar(byte[] user1) throws RemoteException {
         String user = null;
+        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        byte[] mss = null;
         try {
             user = (String) Serializer.toObject(Secrets.decrypt(user1, sharedKey));
-
+            mss = Secrets.encrypt(Database.getAvatar(user), sharedKey);
         } catch (Exception ex) {
             Logger.getLogger(RemoteObjectMessenger.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return Database.getAvatar(user);
+        return mss;
     }
 
     @Override
@@ -306,7 +288,7 @@ public class RemoteObjectMessenger implements RemoteInterfaceMessenger {
         }
         if (Database.userExists(user)) {
             return Database.correctAnswer(user, ansStr);
-        } 
+        }
         return false;
     }
 

@@ -17,9 +17,9 @@ public class Messages implements Serializable {
     private byte[] source;
     private byte[] fileName;
 
-    public Messages(byte[] Message, byte[] destination) {
+    public Messages(byte[] Message, byte[] source) {
         this.Message = Message;
-        this.source = destination;
+        this.source = source;
     }
 
     public Messages(byte[] Message, byte[] source, byte[] fileName) {

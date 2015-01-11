@@ -136,12 +136,12 @@ public class RemoteObjectMessenger implements RemoteInterfaceMessenger {
     }
 
     @Override
-    public void setSecretMessage(byte[] msg, byte[] user1, byte[] UserDestination) throws RemoteException {
+    public void setSecretMessage(byte[] msg, byte[] destUser, byte[] sourceUser) throws RemoteException {
         try {
             String user = null;
-            user = (String) Serializer.toObject(Secrets.decrypt(user1, sharedKey));
+            user = (String) Serializer.toObject(Secrets.decrypt(destUser, sharedKey));
             System.out.println("Setting message to" + user);
-            usersMessages.get(user).add(new Messages(msg, UserDestination));
+            usersMessages.get(user).add(new Messages(msg, sourceUser));
         } catch (Exception ex) {
             Logger.getLogger(RemoteObjectMessenger.class.getName()).log(Level.SEVERE, null, ex);
         }
